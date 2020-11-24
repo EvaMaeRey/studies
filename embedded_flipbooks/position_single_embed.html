@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>titanic</title>
+    <title>position single</title>
     <meta charset="utf-8" />
     <meta name="author" content="" />
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
@@ -28,47 +28,60 @@
 
 
 count: false
+ 
 
-&lt;img src="titanic_embed_files/figure-html/the_chunk_user_01_output-1.png" width="576" /&gt;
+.panel1-the_chunk-rotate[
+
+```r
+ggplot(data = mtcars) +
+  aes(x = factor(cyl)) +
+* aes(fill = factor(vs)) +
+  labs(fill = "vs") +
+  geom_bar(position = position_dodge(preserve = "single"))
+```
+]
+ 
+.panel2-the_chunk-rotate[
+&lt;img src="position_single_embed_files/figure-html/the_chunk_rotate_01_output-1.png" width="576" /&gt;
+]
 
 ---
 count: false
+ 
 
-&lt;img src="titanic_embed_files/figure-html/the_chunk_user_02_output-1.png" width="576" /&gt;
+.panel1-the_chunk-rotate[
 
----
-count: false
-
-&lt;img src="titanic_embed_files/figure-html/the_chunk_user_03_output-1.png" width="576" /&gt;
-
----
-count: false
-
-&lt;img src="titanic_embed_files/figure-html/the_chunk_user_04_output-1.png" width="576" /&gt;
-
----
-count: false
-
-&lt;img src="titanic_embed_files/figure-html/the_chunk_user_05_output-1.png" width="576" /&gt;
+```r
+ggplot(data = mtcars) +
+  aes(x = factor(cyl)) +
+* aes(fill = fct_rev(factor(vs))) +
+  labs(fill = "vs") +
+  geom_bar(position = position_dodge(preserve = "single"))
+```
+]
+ 
+.panel2-the_chunk-rotate[
+&lt;img src="position_single_embed_files/figure-html/the_chunk_rotate_02_output-1.png" width="576" /&gt;
+]
 
 &lt;style&gt;
-.panel1-the_chunk-user {
+.panel1-the_chunk-rotate {
   color: black;
-  width: 99%;
+  width: 53.4545454545454%;
   hight: 32%;
   float: left;
   padding-left: 1%;
   font-size: 80%
 }
-.panel2-the_chunk-user {
+.panel2-the_chunk-rotate {
   color: black;
-  width: NA%;
+  width: 44.5454545454545%;
   hight: 32%;
   float: left;
   padding-left: 1%;
   font-size: 80%
 }
-.panel3-the_chunk-user {
+.panel3-the_chunk-rotate {
   color: black;
   width: NA%;
   hight: 33%;
@@ -83,7 +96,7 @@ count: false
 
 
 &lt;style type="text/css"&gt;
-.remark-code{line-height: 1.5; font-size: 90%}
+.remark-code{line-height: 1.5; font-size: 100%}
 
 @media print {
   .has-continuation {

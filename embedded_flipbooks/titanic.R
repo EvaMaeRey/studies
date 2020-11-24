@@ -23,4 +23,3 @@ Titanic %>%
   facet_grid(Class~.) + 
   scale_y_continuous(expand = expansion(mult = c(.025, .3))) + #BREAK
   facet_grid(Class~Age) #BREAK
-

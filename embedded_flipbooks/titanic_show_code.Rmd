@@ -1,5 +1,5 @@
 ---
-title: "titanic"
+title: "embedded_flipbooks/code and titanic"
 subtitle: ""
 author: ""
 output:
@@ -58,7 +58,7 @@ Titanic %>%
   facet_grid(Class~Age) #BREAK
 ```
 
-`r chunk_reveal(chunk_name = "the_chunk", break_type = "user", ...)`
+`r chunk_reveal(chunk_name = "the_chunk", break_type = "auto", ...)`
 
 
 

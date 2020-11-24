@@ -9,16 +9,16 @@ library(flipbookr)
 library(tidyverse)
 ```
 
-# Storytelling with bar charts
+### Storytelling with bar charts {.tabset .tabset-fade .tabset-pills}
+
 
 A cool thing to do for your audience is to walk them through breakdowns of data.  So you can start with the universe of observations.  How many people, fish, countries, etc are in your data story? And then what is the division in that data for the outcome of interest?  And what are the potential variables that might be co-related to that outcome.  
+
+#### Breaking down count slowly
 
 Below, we look at an example of the titanic tragedy.
 
 We start with a total count of people on aboard ship. 
-
-
-
 
 ```{r titanic, include = F}
 library(tidyverse)
@@ -46,7 +46,6 @@ Titanic %>%
   facet_grid(Class~.) + 
   scale_y_continuous(expand = expansion(mult = c(.025, .3))) + #BREAK
   facet_grid(Class~Age) #BREAK
-
 ```
 
 
@@ -60,22 +59,25 @@ embed_flipbook("titanic",
 ```
 
 
-## How can we get this done? 
+#### How can we get this done? 
 
 You might think, to get those counts, we'll have to do quite a lot of computational set up work.  But in fact ggplot2 will do this for you as you build up you plot (and break down by category). 
 
 ```{r}
 embed_flipbook("titanic", 
-               title = "code and titanic",
-               rmd_path = "titanic_show_code.Rmd",
-               url = "titanic_show_code.html",
+               title = "embedded_flipbooks/code and titanic",
+               rmd_path = "embedded_flipbooks/titanic_show_code.Rmd",
+               url = "embedded_flipbooks/titanic_show_code.html",
                font_size = 90, 
                use_embed_xaringan = T,
                use_share_again = T)
 ```
 
+### Positions in ggplot2  {.tabset .tabset-fade .tabset-pills}
 
-# Positions in ggplot2
+We have a lot of choice when it comes to position of bars.
+
+#### Survey of positions
 
 
 ```{r positions, include=F}
@@ -119,9 +121,10 @@ embed_flipbook("positions",
 
 
 
-# Position 'waldo'
+#### Position 'waldo'
 
-To get position "waldo" (ensuring that aligned fill categories), you need to work a bit harder.  You do need to calculate the heights associated with the columns, including zero height columns.
+
+What I'm calling "waldo" is the position where fill categories are aligned when dodged. To get "waldo" position, you need to work a bit harder.  You do need to calculate the heights associated with the columns, including zero height columns.
 
 To prep the data
 
@@ -133,7 +136,7 @@ Notice that applying `count()`, you haves some counts of zero.
 Here we are using geom_col, which by default does no statistical transformation on the data -- it is an 'individual' geom in it's native state; i.e. puts one geom/mark on the plot per row in the data.  goem_bar is just a shortcut to geom_col(stat = "count") - it is a collective geom; i.e. puts one geom/mark on the plot for several rows in the data.   
 
 
-```{r waldo, include=F}
+```{r waldo, echo =F}
 set.seed(12456)
 num <- 10
 tibble(type = sample(LETTERS[1:2], num, replace = T) ,
@@ -166,9 +169,9 @@ embed_flipbook("waldo",
 
 How do you expect this figure to change if the variables state and type are also factors?
 
----
 
-# Isn't `position_dodge(preserve = "single")`, "waldo"?
+
+#### Isn't `position_dodge(preserve = "single")`, "waldo"?
 
 
 Don't I get 'waldo' with position_dodge(preserve = "single"))? 
