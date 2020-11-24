@@ -1,0 +1,79 @@
+---
+title: "a plot"
+subtitle: ""
+author: ""
+output:
+  xaringan::moon_reader:
+    seal: FALSE
+    lib_dir: libs
+    css: [default, hygge, ninjutsu]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+
+```{r, include = F}
+options(knitr.duplicate.label = "allow")
+knitr::opts_chunk$set(fig.width = 6, message = FALSE, warning = FALSE, comment = "", cache = F)
+library(flipbookr)
+library(tidyverse)
+load("current_image.Rdata")
+```
+
+
+```{r, echo = F, eval = TRUE , message = F, warning = F}
+xaringanExtra::use_share_again()
+```
+
+
+```{r the_chunk, include = F}
+my_table %>% 
+  ggplot() +
+  aes(x = which_subset) +
+  aes(y = percent) +
+  geom_col(alpha = .5,
+           color = "grey") +
+  aes(fill = Survived) +
+  scale_fill_manual(values = c("oldlace", "plum")) +
+  geom_text(aes(label = 
+                  paste0(percent, 
+                         "%","\ncount:", 
+                         n),
+                alpha = Survived),
+            y = 3,
+            vjust = 0,
+            lineheight = .7, show.legend = F) +
+  scale_y_continuous(limits = c(0,100)) +
+  theme_minimal() 
+```
+
+`r chunk_reveal(chunk_name = "the_chunk", break_type = "auto", ...)`
+
+
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 120%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+

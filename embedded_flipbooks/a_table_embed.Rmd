@@ -1,0 +1,81 @@
+---
+title: "a table"
+subtitle: ""
+author: ""
+output:
+  xaringan::moon_reader:
+    seal: FALSE
+    lib_dir: libs
+    css: [default, hygge, ninjutsu]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+
+```{r, include = F}
+options(knitr.duplicate.label = "allow")
+knitr::opts_chunk$set(fig.width = 6, message = FALSE, warning = FALSE, comment = "", cache = F)
+library(flipbookr)
+library(tidyverse)
+load("current_image.Rdata")
+```
+
+
+```{r, echo = F, eval = TRUE , message = F, warning = F}
+xaringanExtra::use_share_again()
+```
+
+
+```{r the_chunk, include = F}
+bind_rows(all_data %>% 
+            mutate(which_subset = "all"),
+          child_data %>% 
+            mutate(which_subset = "child"),
+          female_data %>% 
+            mutate(which_subset = "female"),
+          child_or_female_data %>% 
+            mutate(which_subset = 
+                     "child_or_female")) %>%
+  mutate(which_subset = 
+           fct_inorder(which_subset)) ->
+bound_rows
+  
+bound_rows %>%   
+  group_by(which_subset, Survived) %>%  # here 3 different outcomes, maybe doing some na subset
+  count() %>% 
+  group_by(which_subset) %>% 
+  mutate(percent = (100*n/sum(n)) %>% 
+           round(1)) ->
+my_table; my_table
+```
+
+`r chunk_reveal(chunk_name = "the_chunk", break_type = "auto", ...)`
+
+
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 120%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+
