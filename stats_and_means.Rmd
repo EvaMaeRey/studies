@@ -1,0 +1,79 @@
+---
+title: "stats"
+output: html_document
+---
+
+
+```{r, include=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(echo = F, message = F, warning = F)
+```
+
+
+
+---
+
+
+
+```{r stats, fig.show='hide'}
+g <- mtcars %>% ggplot() +
+  aes(x = cyl) +
+  aes(y = wt) +
+  stat_summary(geom = "pointrange",
+               fun.data = mean_se) +
+  geom_blank() +
+  geom_point(alpha = .3) +
+  geom_boxplot(alpha = .2) +
+  geom_boxplot(alpha = .4,
+               color = "green",
+               aes(group = cyl)) +
+  geom_vline(xintercept = 5) +
+  geom_vline(aes(xintercept = mean(cyl))) +
+  stat_summary(geom = "point",
+               color = "red",
+               col = "goldenrod2", 
+               size = 8,
+               fun.y = "mean")
+
+```
+
+# ggplot making pretty things ...
+
+```{r}
+flipbookr::embed_flipbook("stats",
+                          url = "embedded_flipbooks/first_one.html",
+                          rmd_path = "embedded_flipbooks/first_one.Rmd",
+                            
+                          use_share_again = T,
+                          use_embed_xaringan = T,
+                          left_assign = T,
+                          font_size = 60,
+                            )
+```
+
+
+
+# ... and computing in the background
+
+```{r}
+flipbookr::embed_flipbook("stats",
+                          use_share_again = T,
+                          use_embed_xaringan = T,
+                          left_assign = T,
+                          font_size = 60,
+                          left_assign_add = "# inspect data of most recent layer 
+                          layer_data(ifelse(length(g$layers)>0, 
+                          length(g$layers),1))")
+```
+
+
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+```
