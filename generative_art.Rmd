@@ -1,0 +1,487 @@
+---
+title: "The Rose"
+author: "Gina Reynolds, June 2021"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, hygge, ninjutsu]
+    nature:
+      ratio: 16:10
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+knitr::opts_chunk$set(fig.width = 6, message = FALSE, warning = FALSE, comment = "", cache = T)
+library(flipbookr)
+library(tidyverse)
+```
+
+`r chunk_reveal("the_rose", break_type = 1, display_type = "output", chunk_options = "fig.align = 'center', out.width = '75%'")`
+
+---
+class: inverse
+
+I saw the rose posted recently by Antonio Sánchez Chinchón @aschinchon.  
+
+I liked what I was looking at, but didn't really 'get' what was going on - even with the code posted alongside.
+
+I used that and other code posted by Alex as the basis for exploring w/ ggplot2 and flipbookr: https://cpastem.caltech.edu/documents/18024/ARt.nb.html
+
+
+---
+class: inverse
+
+# Overview
+
+## The rose/flower is ...
+
+--
+
+- a grid of points
+
+--
+
+- where x positions are offset based on the sin of y
+
+--
+
+- and y positions are offset based on the cos of x
+
+--
+
+- and the coordinate system is polar.
+
+--
+
+- Also, the sin and cosine waves accelerate
+
+
+---
+class: inverse
+
+# First the x position. 
+
+## the x grid position is offset ...
+
+- into a wave based on the sin of y
+
+--
+
+- and the waves accelerate moving away from the x axis, so actually y^2
+
+--
+
+- *in ggplot2 updating x positions by overwriting with aes(x = ?) statements*
+
+--
+
+- and the pattern is reflected across the x axis
+
+--
+
+- *adding a geom_point layer where the sign of y is negative*
+
+
+
+---
+
+
+`r chunk_reveal("rose_x_shift")`
+
+```{r rose_x_shift, include = F}
+seq(0, 4, by = .1) -> 
+  my_seq
+
+tibble(x = my_seq) %>% 
+  crossing(y = my_seq) %>% 
+  ggplot() +
+  aes(x = x, 
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c() +
+  aes(x = x - sin(y)) +
+  scale_y_continuous(
+    breaks = -2:2/2*pi, 
+    labels = paste(-2:2/2, "pi")
+    ) +
+  # where waves are accelerating
+  aes(x = x - sin(y^2)) +
+  scale_y_continuous(breaks = c((0:9/2*pi)^.5,-(0:9/2*pi)^.5),
+                     labels = paste0(c((0:9/2),-(0:9/2)), "^.5 pi")) +
+  # and reflected over y = 0
+  geom_point(
+    data = . %>% mutate(y = -y),
+    alpha = .5) ->
+x_offset_determined_by_y
+```
+
+
+---
+class: inverse
+
+# Now the y position.
+
+## the y grid position is offset ...
+
+- into a wave based on the cosine of x
+
+--
+
+- and the waves accelerate moving away from x = 0 (so we actually use x^2)
+
+--
+
+- and the pattern is reflected across x = 0
+
+
+
+
+---
+
+
+`r chunk_reveal("rose_y_shift")`
+
+```{r rose_y_shift, include = F}
+tibble(x = my_seq) %>% 
+  crossing(y = my_seq) %>% 
+  ggplot() +
+  aes(x = x, 
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c() +
+  aes(y = y - cos(x)) +
+  # where waves are accelerating
+  aes(y = y - cos(x^2)) +
+  # and reflected over y = 0
+  geom_point(
+    data = . %>% mutate(x = -x),
+    alpha = .5) ->
+y_offset_determined_by_x
+```
+
+---
+class: inverse
+
+
+# putting it all together
+
+--
+
+- let's see the evolution of both both sets of offsets...
+
+--
+
+- we also let the squaring handle the symmetry across the x and y axes (the sequence goes from -3 to positive 3)
+
+--
+
+---
+
+`r chunk_reveal("the_rose_lite")`
+
+```{r the_rose_lite, include = F}
+seq(-4, 4, by = .1) -> 
+  my_seq
+  
+tibble(x = my_seq) %>% 
+  crossing(y = my_seq) %>% 
+  ggplot() +
+  aes(x = x, 
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+  # offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+  # offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+  # and waves are accelerating 
+  # moving away from zero so use squared value
+  aes(x = x - sin(y^2)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() + 
+  coord_polar() 
+```
+
+
+---
+class: inverse
+
+# Higher resolution is a lot prettier
+
+--
+
+- grid points are closer together and smaller
+
+--
+
+- patterns are clearer in less dense regions
+
+--
+
+- Also, I just do sequence from -3 to 3.  This range be more classic, but I though from -4 to 4 showed wave 'acceleration' more clearly. 
+
+
+
+---
+
+`r chunk_reveal("the_rose")`
+
+---
+class: inverse
+
+```{r, include = F}
+replacements = c("inferno", "magma", "viridis", "cividis")
+#r chunk_reveal("the_rose", break_type = "replace", replace = "magma", replacements = replacements)`
+```
+
+# Try stuff and see what happens.
+
+--
+
+## We can also look a decelaration of waves away from zero and slower accelarations
+
+--
+
+- squaring is a special case that gives us reflection automatically
+
+--
+
+- we'll git irrational numbers if we raise negative numbers to decimals
+
+--
+
+- so we take absolute value first
+
+--
+
+- we'll only adjust the value of x based on the sin of the absolute value of y to some power (between .3 to 1.9)
+
+
+---
+
+
+`r chunk_reveal("the_rose", break_type = "replace", replace = "y\\^2", replacements = c("abs(y)^.3", "abs(y)^.5", "abs(y)^.7", "abs(y)^.9", "abs(y)^1", "abs(y)^1.25","abs(y)^1.5", "abs(y)^1.75", "abs(y)^1.9"))`
+
+
+---
+
+
+```{r the_rose, include = F}
+seq(-3, 3, by = .01) -> my_seq
+  
+tibble(x = my_seq) %>% 
+  crossing(y = my_seq) %>% 
+  ggplot() +
+  aes(x = x, 
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+  # offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+  # offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+  # and waves are accelerating 
+  # moving away from zero so use squared value
+  aes(x = x - sin(y^2)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() + 
+  coord_polar() +
+  theme(legend.position = "none")
+```
+
+---
+class: inverse, center, middle
+
+# stingray
+
+---
+
+
+
+
+`r chunk_reveal("stingray_high_res", break_type = 1, display_type = "output", chunk_options = "fig.align = 'center', out.width = '70%'")`
+
+
+---
+
+`r chunk_reveal("stingray")`
+
+```{r stingray, include = F}
+seq(0,9, by = 0.1) ->
+  my_seq
+
+tibble(x = my_seq) %>% 
+  crossing(y = my_seq) %>% 
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.25) +
+  aes(y = y + sin(x)*.5) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + sin(x)^1.25) +
+  aes(y = y + sin(x)^1.5) +
+  aes(y = y + sin(x)^1.75) +
+  aes(y = y + sin(x)^2) +
+  aes(y = log(y) + sin(x)^2) +
+  coord_equal() +
+  theme_void()  +
+  theme(legend.position = "none")
+```
+
+---
+class: inverse, center, middle
+
+# stingray higher res
+
+---
+
+`r chunk_reveal("stingray_high_res")`
+
+```{r stingray_high_res, include = F}
+seq(0,9, by = 0.025) ->
+  my_seq
+
+tibble(x = my_seq) %>% 
+  crossing(y = my_seq) %>% 
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.1) +
+  aes(y = y + sin(x)*.3) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + abs(sin(x))^1.1) +
+  aes(y = y + abs(sin(x))^1.5) +
+  aes(y = y + abs(sin(x))^1.75) +
+  aes(y = y + sin(x)^2) +
+  aes(y = log(y) + sin(x)^2) +
+  coord_equal() +
+  theme_void()  +
+  theme(legend.position = "none")
+```
+
+
+---
+class: inverse, center, middle
+
+# another rose
+
+---
+
+
+
+
+`r chunk_reveal("rosy", break_type = 1, display_type = "output", chunk_options = "fig.align = 'center', out.width = '70%'")`
+
+---
+
+`r chunk_reveal("rosy")`
+
+
+
+```{r rosy, include = F}
+seq(-12,12, by = 0.04) ->
+  my_seq
+
+tibble(x = my_seq) %>%   
+  crossing(y = my_seq) %>% 
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05, 
+             color = "darkred", 
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+  aes(y = y + .1 * sin(x)) +
+  aes(y = y + .3 * sin(x)) +
+  aes(y = y + .7 * sin(x)) +
+  aes(y = y + 1.5 * sin(x)) +
+  aes(y = y + pi * sin(x)) +
+  theme_void() +
+  scale_y_reverse() +
+  scale_x_continuous(limits = c(-50, 50)) +
+  coord_polar() +
+  scale_x_continuous(limits = c(-30, 30)) +
+  scale_x_continuous(limits = c(-25, 25)) +
+  scale_x_continuous(limits = c(-18, 18)) +
+  scale_x_continuous()
+```
+
+---
+
+`r chunk_reveal("dandelion", title = "Dandalion: One less deconstructed")`
+
+```{r dandelion, include = F}
+seq(-2,2, by = 0.01) ->
+  my_seq
+
+tibble(x = my_seq) %>%   
+  crossing(y = my_seq) %>% 
+  ggplot() +
+  aes(x = x^3 - sin(y)) +
+  aes(y = y^3 - cos(x)) +
+  geom_point(alpha = 0.05, 
+             size = 0) +
+  theme_void()+
+  coord_polar()+
+  labs(subtitle = "Dandelion")
+```
+
+
+<!-- adjust font size in this css code chunk, currently 80 -->
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+
+
+

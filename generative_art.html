@@ -1,0 +1,5463 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>The Rose</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Gina Reynolds, June 2021" />
+    <script src="libs/header-attrs-2.6/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/hygge.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/ninjutsu.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# The Rose
+### Gina Reynolds, June 2021
+
+---
+
+
+
+
+
+count: false
+
+&lt;img src="generative_art_files/figure-html/the_rose_1_01_output-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+&lt;style&gt;
+.panel1-the_rose-1 {
+  color: black;
+  width: 99%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-the_rose-1 {
+  color: black;
+  width: NA%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-the_rose-1 {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+---
+class: inverse
+
+I saw the rose posted recently by Antonio Sánchez Chinchón @aschinchon.  
+
+I liked what I was looking at, but didn't really 'get' what was going on - even with the code posted alongside.
+
+I used that and other code posted by Alex as the basis for exploring w/ ggplot2 and flipbookr: https://cpastem.caltech.edu/documents/18024/ARt.nb.html
+
+
+---
+class: inverse
+
+# Overview
+
+## The rose/flower is ...
+
+--
+
+- a grid of points
+
+--
+
+- where x positions are offset based on the sin of y
+
+--
+
+- and y positions are offset based on the cos of x
+
+--
+
+- and the coordinate system is polar.
+
+--
+
+- Also, the sin and cosine waves accelerate
+
+
+---
+class: inverse
+
+# First the x position. 
+
+## the x grid position is offset ...
+
+- into a wave based on the sin of y
+
+--
+
+- and the waves accelerate moving away from the x axis, so actually y^2
+
+--
+
+- *in ggplot2 updating x positions by overwriting with aes(x = ?) statements*
+
+--
+
+- and the pattern is reflected across the x axis
+
+--
+
+- *adding a geom_point layer where the sign of y is negative*
+
+
+
+---
+
+
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+*seq(0, 4, by = .1)
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+
+```
+ [1] 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8
+[20] 1.9 2.0 2.1 2.2 2.3 2.4 2.5 2.6 2.7 2.8 2.9 3.0 3.1 3.2 3.3 3.4 3.5 3.6 3.7
+[39] 3.8 3.9 4.0
+```
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+* my_seq
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+  my_seq
+
+*tibble(x = my_seq)
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+
+```
+# A tibble: 41 x 1
+       x
+   &lt;dbl&gt;
+ 1   0  
+ 2   0.1
+ 3   0.2
+ 4   0.3
+ 5   0.4
+ 6   0.5
+ 7   0.6
+ 8   0.7
+ 9   0.8
+10   0.9
+# … with 31 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+* crossing(y = my_seq)
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+
+```
+# A tibble: 1,681 x 2
+       x     y
+   &lt;dbl&gt; &lt;dbl&gt;
+ 1     0   0  
+ 2     0   0.1
+ 3     0   0.2
+ 4     0   0.3
+ 5     0   0.4
+ 6     0   0.5
+ 7     0   0.6
+ 8     0   0.7
+ 9     0   0.8
+10     0   0.9
+# … with 1,671 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+* ggplot()
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+![](generative_art_files/figure-html/rose_x_shift_auto_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+* aes(x = x,
+*     y = y)
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+![](generative_art_files/figure-html/rose_x_shift_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+* geom_point(alpha = .5)
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+![](generative_art_files/figure-html/rose_x_shift_auto_07_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+* aes(color = y)
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+![](generative_art_files/figure-html/rose_x_shift_auto_08_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+* scale_color_viridis_c()
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+![](generative_art_files/figure-html/rose_x_shift_auto_09_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c() +
+* aes(x = x - sin(y))
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+![](generative_art_files/figure-html/rose_x_shift_auto_10_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c() +
+  aes(x = x - sin(y)) +
+* scale_y_continuous(
+*   breaks = -2:2/2*pi,
+*   labels = paste(-2:2/2, "pi")
+*   )
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+![](generative_art_files/figure-html/rose_x_shift_auto_11_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c() +
+  aes(x = x - sin(y)) +
+  scale_y_continuous(
+    breaks = -2:2/2*pi,
+    labels = paste(-2:2/2, "pi")
+    ) +
+# where waves are accelerating
+* aes(x = x - sin(y^2))
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+![](generative_art_files/figure-html/rose_x_shift_auto_12_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c() +
+  aes(x = x - sin(y)) +
+  scale_y_continuous(
+    breaks = -2:2/2*pi,
+    labels = paste(-2:2/2, "pi")
+    ) +
+# where waves are accelerating
+  aes(x = x - sin(y^2)) +
+* scale_y_continuous(breaks = c((0:9/2*pi)^.5,-(0:9/2*pi)^.5),
+*                    labels = paste0(c((0:9/2),-(0:9/2)), "^.5 pi"))
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+![](generative_art_files/figure-html/rose_x_shift_auto_13_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c() +
+  aes(x = x - sin(y)) +
+  scale_y_continuous(
+    breaks = -2:2/2*pi,
+    labels = paste(-2:2/2, "pi")
+    ) +
+# where waves are accelerating
+  aes(x = x - sin(y^2)) +
+  scale_y_continuous(breaks = c((0:9/2*pi)^.5,-(0:9/2*pi)^.5),
+                     labels = paste0(c((0:9/2),-(0:9/2)), "^.5 pi")) +
+# and reflected over y = 0
+* geom_point(
+*   data = . %&gt;% mutate(y = -y),
+*   alpha = .5)
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+![](generative_art_files/figure-html/rose_x_shift_auto_14_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_x_shift-auto[
+
+```r
+seq(0, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c() +
+  aes(x = x - sin(y)) +
+  scale_y_continuous(
+    breaks = -2:2/2*pi,
+    labels = paste(-2:2/2, "pi")
+    ) +
+# where waves are accelerating
+  aes(x = x - sin(y^2)) +
+  scale_y_continuous(breaks = c((0:9/2*pi)^.5,-(0:9/2*pi)^.5),
+                     labels = paste0(c((0:9/2),-(0:9/2)), "^.5 pi")) +
+# and reflected over y = 0
+  geom_point(
+    data = . %&gt;% mutate(y = -y),
+    alpha = .5) -&gt;
+*x_offset_determined_by_y
+```
+]
+ 
+.panel2-rose_x_shift-auto[
+
+]
+
+&lt;style&gt;
+.panel1-rose_x_shift-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-rose_x_shift-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-rose_x_shift-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+class: inverse
+
+# Now the y position.
+
+## the y grid position is offset ...
+
+- into a wave based on the cosine of x
+
+--
+
+- and the waves accelerate moving away from x = 0 (so we actually use x^2)
+
+--
+
+- and the pattern is reflected across x = 0
+
+
+
+
+---
+
+
+count: false
+ 
+
+.panel1-rose_y_shift-auto[
+
+```r
+*tibble(x = my_seq)
+```
+]
+ 
+.panel2-rose_y_shift-auto[
+
+```
+# A tibble: 41 x 1
+       x
+   &lt;dbl&gt;
+ 1   0  
+ 2   0.1
+ 3   0.2
+ 4   0.3
+ 5   0.4
+ 6   0.5
+ 7   0.6
+ 8   0.7
+ 9   0.8
+10   0.9
+# … with 31 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-rose_y_shift-auto[
+
+```r
+tibble(x = my_seq) %&gt;%
+* crossing(y = my_seq)
+```
+]
+ 
+.panel2-rose_y_shift-auto[
+
+```
+# A tibble: 1,681 x 2
+       x     y
+   &lt;dbl&gt; &lt;dbl&gt;
+ 1     0   0  
+ 2     0   0.1
+ 3     0   0.2
+ 4     0   0.3
+ 5     0   0.4
+ 6     0   0.5
+ 7     0   0.6
+ 8     0   0.7
+ 9     0   0.8
+10     0   0.9
+# … with 1,671 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-rose_y_shift-auto[
+
+```r
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+* ggplot()
+```
+]
+ 
+.panel2-rose_y_shift-auto[
+![](generative_art_files/figure-html/rose_y_shift_auto_03_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_y_shift-auto[
+
+```r
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+* aes(x = x,
+*     y = y)
+```
+]
+ 
+.panel2-rose_y_shift-auto[
+![](generative_art_files/figure-html/rose_y_shift_auto_04_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_y_shift-auto[
+
+```r
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+* geom_point(alpha = .5)
+```
+]
+ 
+.panel2-rose_y_shift-auto[
+![](generative_art_files/figure-html/rose_y_shift_auto_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_y_shift-auto[
+
+```r
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+* aes(color = y)
+```
+]
+ 
+.panel2-rose_y_shift-auto[
+![](generative_art_files/figure-html/rose_y_shift_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_y_shift-auto[
+
+```r
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+* scale_color_viridis_c()
+```
+]
+ 
+.panel2-rose_y_shift-auto[
+![](generative_art_files/figure-html/rose_y_shift_auto_07_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_y_shift-auto[
+
+```r
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c() +
+* aes(y = y - cos(x))
+```
+]
+ 
+.panel2-rose_y_shift-auto[
+![](generative_art_files/figure-html/rose_y_shift_auto_08_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_y_shift-auto[
+
+```r
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c() +
+  aes(y = y - cos(x)) +
+# where waves are accelerating
+* aes(y = y - cos(x^2))
+```
+]
+ 
+.panel2-rose_y_shift-auto[
+![](generative_art_files/figure-html/rose_y_shift_auto_09_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_y_shift-auto[
+
+```r
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c() +
+  aes(y = y - cos(x)) +
+# where waves are accelerating
+  aes(y = y - cos(x^2)) +
+# and reflected over y = 0
+* geom_point(
+*   data = . %&gt;% mutate(x = -x),
+*   alpha = .5)
+```
+]
+ 
+.panel2-rose_y_shift-auto[
+![](generative_art_files/figure-html/rose_y_shift_auto_10_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rose_y_shift-auto[
+
+```r
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c() +
+  aes(y = y - cos(x)) +
+# where waves are accelerating
+  aes(y = y - cos(x^2)) +
+# and reflected over y = 0
+  geom_point(
+    data = . %&gt;% mutate(x = -x),
+    alpha = .5) -&gt;
+*y_offset_determined_by_x
+```
+]
+ 
+.panel2-rose_y_shift-auto[
+
+]
+
+&lt;style&gt;
+.panel1-rose_y_shift-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-rose_y_shift-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-rose_y_shift-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+class: inverse
+
+
+# putting it all together
+
+--
+
+- let's see the evolution of both both sets of offsets...
+
+--
+
+- we also let the squaring handle the symmetry across the x and y axes (the sequence goes from -3 to positive 3)
+
+--
+
+---
+
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+*seq(-4, 4, by = .1)
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+
+```
+ [1] -4.0 -3.9 -3.8 -3.7 -3.6 -3.5 -3.4 -3.3 -3.2 -3.1 -3.0 -2.9 -2.8 -2.7 -2.6
+[16] -2.5 -2.4 -2.3 -2.2 -2.1 -2.0 -1.9 -1.8 -1.7 -1.6 -1.5 -1.4 -1.3 -1.2 -1.1
+[31] -1.0 -0.9 -0.8 -0.7 -0.6 -0.5 -0.4 -0.3 -0.2 -0.1  0.0  0.1  0.2  0.3  0.4
+[46]  0.5  0.6  0.7  0.8  0.9  1.0  1.1  1.2  1.3  1.4  1.5  1.6  1.7  1.8  1.9
+[61]  2.0  2.1  2.2  2.3  2.4  2.5  2.6  2.7  2.8  2.9  3.0  3.1  3.2  3.3  3.4
+[76]  3.5  3.6  3.7  3.8  3.9  4.0
+```
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+* my_seq
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+  my_seq
+
+*tibble(x = my_seq)
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+
+```
+# A tibble: 81 x 1
+       x
+   &lt;dbl&gt;
+ 1  -4  
+ 2  -3.9
+ 3  -3.8
+ 4  -3.7
+ 5  -3.6
+ 6  -3.5
+ 7  -3.4
+ 8  -3.3
+ 9  -3.2
+10  -3.1
+# … with 71 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+* crossing(y = my_seq)
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+
+```
+# A tibble: 6,561 x 2
+       x     y
+   &lt;dbl&gt; &lt;dbl&gt;
+ 1    -4  -4  
+ 2    -4  -3.9
+ 3    -4  -3.8
+ 4    -4  -3.7
+ 5    -4  -3.6
+ 6    -4  -3.5
+ 7    -4  -3.4
+ 8    -4  -3.3
+ 9    -4  -3.2
+10    -4  -3.1
+# … with 6,551 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+* ggplot()
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+![](generative_art_files/figure-html/the_rose_lite_auto_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+* aes(x = x,
+*     y = y)
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+![](generative_art_files/figure-html/the_rose_lite_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+* geom_point(alpha = .5)
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+![](generative_art_files/figure-html/the_rose_lite_auto_07_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+* aes(color = y)
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+![](generative_art_files/figure-html/the_rose_lite_auto_08_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+* scale_color_viridis_c(option = "cividis")
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+![](generative_art_files/figure-html/the_rose_lite_auto_09_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+# offset of x is determined by sin of y
+* aes(x = x - sin(y))
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+![](generative_art_files/figure-html/the_rose_lite_auto_10_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+# offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+# offset of y is determined by cos of x
+* aes(y = y - cos(x))
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+![](generative_art_files/figure-html/the_rose_lite_auto_11_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+# offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+# offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+# and waves are accelerating
+# moving away from zero so use squared value
+* aes(x = x - sin(y^2))
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+![](generative_art_files/figure-html/the_rose_lite_auto_12_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+# offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+# offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+# and waves are accelerating
+# moving away from zero so use squared value
+  aes(x = x - sin(y^2)) +
+* aes(y = y - cos(x^2))
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+![](generative_art_files/figure-html/the_rose_lite_auto_13_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+# offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+# offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+# and waves are accelerating
+# moving away from zero so use squared value
+  aes(x = x - sin(y^2)) +
+  aes(y = y - cos(x^2)) +
+* theme_void()
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+![](generative_art_files/figure-html/the_rose_lite_auto_14_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose_lite-auto[
+
+```r
+seq(-4, 4, by = .1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .5) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+# offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+# offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+# and waves are accelerating
+# moving away from zero so use squared value
+  aes(x = x - sin(y^2)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() +
+* coord_polar()
+```
+]
+ 
+.panel2-the_rose_lite-auto[
+![](generative_art_files/figure-html/the_rose_lite_auto_15_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-the_rose_lite-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-the_rose_lite-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-the_rose_lite-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+class: inverse
+
+# Higher resolution is a lot prettier
+
+--
+
+- grid points are closer together and smaller
+
+--
+
+- patterns are clearer in less dense regions
+
+--
+
+- Also, I just do sequence from -3 to 3.  This range be more classic, but I though from -4 to 4 showed wave 'acceleration' more clearly. 
+
+
+
+---
+
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+*seq(-3, 3, by = .01) -&gt; my_seq
+```
+]
+ 
+.panel2-the_rose-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+*tibble(x = my_seq)
+```
+]
+ 
+.panel2-the_rose-auto[
+
+```
+# A tibble: 601 x 1
+       x
+   &lt;dbl&gt;
+ 1 -3   
+ 2 -2.99
+ 3 -2.98
+ 4 -2.97
+ 5 -2.96
+ 6 -2.95
+ 7 -2.94
+ 8 -2.93
+ 9 -2.92
+10 -2.91
+# … with 591 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+tibble(x = my_seq) %&gt;%
+* crossing(y = my_seq)
+```
+]
+ 
+.panel2-the_rose-auto[
+
+```
+# A tibble: 361,201 x 2
+       x     y
+   &lt;dbl&gt; &lt;dbl&gt;
+ 1    -3 -3   
+ 2    -3 -2.99
+ 3    -3 -2.98
+ 4    -3 -2.97
+ 5    -3 -2.96
+ 6    -3 -2.95
+ 7    -3 -2.94
+ 8    -3 -2.93
+ 9    -3 -2.92
+10    -3 -2.91
+# … with 361,191 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+* ggplot()
+```
+]
+ 
+.panel2-the_rose-auto[
+![](generative_art_files/figure-html/the_rose_auto_04_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+* aes(x = x,
+*     y = y)
+```
+]
+ 
+.panel2-the_rose-auto[
+![](generative_art_files/figure-html/the_rose_auto_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+* geom_point(alpha = .05, size = .05)
+```
+]
+ 
+.panel2-the_rose-auto[
+![](generative_art_files/figure-html/the_rose_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+* aes(color = y)
+```
+]
+ 
+.panel2-the_rose-auto[
+![](generative_art_files/figure-html/the_rose_auto_07_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+* scale_color_viridis_c(option = "cividis")
+```
+]
+ 
+.panel2-the_rose-auto[
+![](generative_art_files/figure-html/the_rose_auto_08_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+# offset of x is determined by sin of y
+* aes(x = x - sin(y))
+```
+]
+ 
+.panel2-the_rose-auto[
+![](generative_art_files/figure-html/the_rose_auto_09_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+# offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+# offset of y is determined by cos of x
+* aes(y = y - cos(x))
+```
+]
+ 
+.panel2-the_rose-auto[
+![](generative_art_files/figure-html/the_rose_auto_10_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+# offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+# offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+# and waves are accelerating
+# moving away from zero so use squared value
+* aes(x = x - sin(y^2))
+```
+]
+ 
+.panel2-the_rose-auto[
+![](generative_art_files/figure-html/the_rose_auto_11_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+# offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+# offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+# and waves are accelerating
+# moving away from zero so use squared value
+  aes(x = x - sin(y^2)) +
+* aes(y = y - cos(x^2))
+```
+]
+ 
+.panel2-the_rose-auto[
+![](generative_art_files/figure-html/the_rose_auto_12_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+# offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+# offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+# and waves are accelerating
+# moving away from zero so use squared value
+  aes(x = x - sin(y^2)) +
+  aes(y = y - cos(x^2)) +
+* theme_void()
+```
+]
+ 
+.panel2-the_rose-auto[
+![](generative_art_files/figure-html/the_rose_auto_13_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+# offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+# offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+# and waves are accelerating
+# moving away from zero so use squared value
+  aes(x = x - sin(y^2)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() +
+* coord_polar()
+```
+]
+ 
+.panel2-the_rose-auto[
+![](generative_art_files/figure-html/the_rose_auto_14_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-auto[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x,
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+# offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+# offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+# and waves are accelerating
+# moving away from zero so use squared value
+  aes(x = x - sin(y^2)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() +
+  coord_polar() +
+* theme(legend.position = "none")
+```
+]
+ 
+.panel2-the_rose-auto[
+![](generative_art_files/figure-html/the_rose_auto_15_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-the_rose-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-the_rose-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-the_rose-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+---
+class: inverse
+
+
+
+# Try stuff and see what happens.
+
+--
+
+## We can also look a decelaration of waves away from zero and slower accelarations
+
+--
+
+- squaring is a special case that gives us reflection automatically
+
+--
+
+- we'll git irrational numbers if we raise negative numbers to decimals
+
+--
+
+- so we take absolute value first
+
+--
+
+- we'll only adjust the value of x based on the sin of the absolute value of y to some power (between .3 to 1.9)
+
+
+---
+
+
+count: false
+ 
+
+.panel1-the_rose-replace[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+  
+tibble(x = my_seq) %&gt;% 
+  crossing(y = my_seq) %&gt;% 
+  ggplot() +
+  aes(x = x, 
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+  # offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+  # offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+  # and waves are accelerating 
+  # moving away from zero so use squared value
+* aes(x = x - sin(abs(y)^.3)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() + 
+  coord_polar() +
+  theme(legend.position = "none")
+```
+]
+ 
+.panel2-the_rose-replace[
+![](generative_art_files/figure-html/the_rose_replace_01_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-replace[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+  
+tibble(x = my_seq) %&gt;% 
+  crossing(y = my_seq) %&gt;% 
+  ggplot() +
+  aes(x = x, 
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+  # offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+  # offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+  # and waves are accelerating 
+  # moving away from zero so use squared value
+* aes(x = x - sin(abs(y)^.5)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() + 
+  coord_polar() +
+  theme(legend.position = "none")
+```
+]
+ 
+.panel2-the_rose-replace[
+![](generative_art_files/figure-html/the_rose_replace_02_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-replace[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+  
+tibble(x = my_seq) %&gt;% 
+  crossing(y = my_seq) %&gt;% 
+  ggplot() +
+  aes(x = x, 
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+  # offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+  # offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+  # and waves are accelerating 
+  # moving away from zero so use squared value
+* aes(x = x - sin(abs(y)^.7)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() + 
+  coord_polar() +
+  theme(legend.position = "none")
+```
+]
+ 
+.panel2-the_rose-replace[
+![](generative_art_files/figure-html/the_rose_replace_03_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-replace[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+  
+tibble(x = my_seq) %&gt;% 
+  crossing(y = my_seq) %&gt;% 
+  ggplot() +
+  aes(x = x, 
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+  # offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+  # offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+  # and waves are accelerating 
+  # moving away from zero so use squared value
+* aes(x = x - sin(abs(y)^.9)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() + 
+  coord_polar() +
+  theme(legend.position = "none")
+```
+]
+ 
+.panel2-the_rose-replace[
+![](generative_art_files/figure-html/the_rose_replace_04_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-replace[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+  
+tibble(x = my_seq) %&gt;% 
+  crossing(y = my_seq) %&gt;% 
+  ggplot() +
+  aes(x = x, 
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+  # offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+  # offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+  # and waves are accelerating 
+  # moving away from zero so use squared value
+* aes(x = x - sin(abs(y)^1)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() + 
+  coord_polar() +
+  theme(legend.position = "none")
+```
+]
+ 
+.panel2-the_rose-replace[
+![](generative_art_files/figure-html/the_rose_replace_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-replace[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+  
+tibble(x = my_seq) %&gt;% 
+  crossing(y = my_seq) %&gt;% 
+  ggplot() +
+  aes(x = x, 
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+  # offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+  # offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+  # and waves are accelerating 
+  # moving away from zero so use squared value
+* aes(x = x - sin(abs(y)^1.25)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() + 
+  coord_polar() +
+  theme(legend.position = "none")
+```
+]
+ 
+.panel2-the_rose-replace[
+![](generative_art_files/figure-html/the_rose_replace_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-replace[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+  
+tibble(x = my_seq) %&gt;% 
+  crossing(y = my_seq) %&gt;% 
+  ggplot() +
+  aes(x = x, 
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+  # offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+  # offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+  # and waves are accelerating 
+  # moving away from zero so use squared value
+* aes(x = x - sin(abs(y)^1.5)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() + 
+  coord_polar() +
+  theme(legend.position = "none")
+```
+]
+ 
+.panel2-the_rose-replace[
+![](generative_art_files/figure-html/the_rose_replace_07_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-replace[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+  
+tibble(x = my_seq) %&gt;% 
+  crossing(y = my_seq) %&gt;% 
+  ggplot() +
+  aes(x = x, 
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+  # offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+  # offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+  # and waves are accelerating 
+  # moving away from zero so use squared value
+* aes(x = x - sin(abs(y)^1.75)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() + 
+  coord_polar() +
+  theme(legend.position = "none")
+```
+]
+ 
+.panel2-the_rose-replace[
+![](generative_art_files/figure-html/the_rose_replace_08_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-the_rose-replace[
+
+```r
+seq(-3, 3, by = .01) -&gt; my_seq
+  
+tibble(x = my_seq) %&gt;% 
+  crossing(y = my_seq) %&gt;% 
+  ggplot() +
+  aes(x = x, 
+      y = y) +
+  geom_point(alpha = .05, size = .05) +
+  aes(color = y) +
+  scale_color_viridis_c(option = "cividis") +
+  # offset of x is determined by sin of y
+  aes(x = x - sin(y)) +
+  # offset of y is determined by cos of x
+  aes(y = y - cos(x)) +
+  # and waves are accelerating 
+  # moving away from zero so use squared value
+* aes(x = x - sin(abs(y)^1.9)) +
+  aes(y = y - cos(x^2)) +
+  theme_void() + 
+  coord_polar() +
+  theme(legend.position = "none")
+```
+]
+ 
+.panel2-the_rose-replace[
+![](generative_art_files/figure-html/the_rose_replace_09_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-the_rose-replace {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-the_rose-replace {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-the_rose-replace {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+---
+
+
+
+
+---
+class: inverse, center, middle
+
+# stingray
+
+---
+
+
+
+
+count: false
+
+&lt;img src="generative_art_files/figure-html/stingray_high_res_1_01_output-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+&lt;style&gt;
+.panel1-stingray_high_res-1 {
+  color: black;
+  width: 99%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-stingray_high_res-1 {
+  color: black;
+  width: NA%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-stingray_high_res-1 {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+*seq(0,9, by = 0.1)
+```
+]
+ 
+.panel2-stingray-auto[
+
+```
+ [1] 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8
+[20] 1.9 2.0 2.1 2.2 2.3 2.4 2.5 2.6 2.7 2.8 2.9 3.0 3.1 3.2 3.3 3.4 3.5 3.6 3.7
+[39] 3.8 3.9 4.0 4.1 4.2 4.3 4.4 4.5 4.6 4.7 4.8 4.9 5.0 5.1 5.2 5.3 5.4 5.5 5.6
+[58] 5.7 5.8 5.9 6.0 6.1 6.2 6.3 6.4 6.5 6.6 6.7 6.8 6.9 7.0 7.1 7.2 7.3 7.4 7.5
+[77] 7.6 7.7 7.8 7.9 8.0 8.1 8.2 8.3 8.4 8.5 8.6 8.7 8.8 8.9 9.0
+```
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+* my_seq
+```
+]
+ 
+.panel2-stingray-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+*tibble(x = my_seq)
+```
+]
+ 
+.panel2-stingray-auto[
+
+```
+# A tibble: 91 x 1
+       x
+   &lt;dbl&gt;
+ 1   0  
+ 2   0.1
+ 3   0.2
+ 4   0.3
+ 5   0.4
+ 6   0.5
+ 7   0.6
+ 8   0.7
+ 9   0.8
+10   0.9
+# … with 81 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+* crossing(y = my_seq)
+```
+]
+ 
+.panel2-stingray-auto[
+
+```
+# A tibble: 8,281 x 2
+       x     y
+   &lt;dbl&gt; &lt;dbl&gt;
+ 1     0   0  
+ 2     0   0.1
+ 3     0   0.2
+ 4     0   0.3
+ 5     0   0.4
+ 6     0   0.5
+ 7     0   0.6
+ 8     0   0.7
+ 9     0   0.8
+10     0   0.9
+# … with 8,271 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+* ggplot()
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+* aes(x = x, y = y)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+* geom_point(size = .1)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_07_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+* aes(color = y)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_08_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+* aes(alpha = x)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_09_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+* scale_color_viridis_c()
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_10_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+* aes(x = x + sin(y))
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_11_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+* aes(x = x + sin(y)^2)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_12_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+* aes(x = log(x) + sin(y)^2)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_13_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+* aes(y = y + sin(x)*.25)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_14_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.25) +
+* aes(y = y + sin(x)*.5)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_15_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.25) +
+  aes(y = y + sin(x)*.5) +
+* aes(y = y + sin(x)*.75)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_16_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.25) +
+  aes(y = y + sin(x)*.5) +
+  aes(y = y + sin(x)*.75) +
+* aes(y = y + sin(x))
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_17_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.25) +
+  aes(y = y + sin(x)*.5) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+* aes(y = y + sin(x)^1.25)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_18_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.25) +
+  aes(y = y + sin(x)*.5) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + sin(x)^1.25) +
+* aes(y = y + sin(x)^1.5)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_19_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.25) +
+  aes(y = y + sin(x)*.5) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + sin(x)^1.25) +
+  aes(y = y + sin(x)^1.5) +
+* aes(y = y + sin(x)^1.75)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_20_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.25) +
+  aes(y = y + sin(x)*.5) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + sin(x)^1.25) +
+  aes(y = y + sin(x)^1.5) +
+  aes(y = y + sin(x)^1.75) +
+* aes(y = y + sin(x)^2)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_21_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.25) +
+  aes(y = y + sin(x)*.5) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + sin(x)^1.25) +
+  aes(y = y + sin(x)^1.5) +
+  aes(y = y + sin(x)^1.75) +
+  aes(y = y + sin(x)^2) +
+* aes(y = log(y) + sin(x)^2)
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_22_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.25) +
+  aes(y = y + sin(x)*.5) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + sin(x)^1.25) +
+  aes(y = y + sin(x)^1.5) +
+  aes(y = y + sin(x)^1.75) +
+  aes(y = y + sin(x)^2) +
+  aes(y = log(y) + sin(x)^2) +
+* coord_equal()
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_23_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.25) +
+  aes(y = y + sin(x)*.5) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + sin(x)^1.25) +
+  aes(y = y + sin(x)^1.5) +
+  aes(y = y + sin(x)^1.75) +
+  aes(y = y + sin(x)^2) +
+  aes(y = log(y) + sin(x)^2) +
+  coord_equal() +
+* theme_void()
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_24_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray-auto[
+
+```r
+seq(0,9, by = 0.1) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = .1) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.25) +
+  aes(y = y + sin(x)*.5) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + sin(x)^1.25) +
+  aes(y = y + sin(x)^1.5) +
+  aes(y = y + sin(x)^1.75) +
+  aes(y = y + sin(x)^2) +
+  aes(y = log(y) + sin(x)^2) +
+  coord_equal() +
+  theme_void()  +
+* theme(legend.position = "none")
+```
+]
+ 
+.panel2-stingray-auto[
+![](generative_art_files/figure-html/stingray_auto_25_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-stingray-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-stingray-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-stingray-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+class: inverse, center, middle
+
+# stingray higher res
+
+---
+
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+*seq(0,9, by = 0.025)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+
+```
+  [1] 0.000 0.025 0.050 0.075 0.100 0.125 0.150 0.175 0.200 0.225 0.250 0.275
+ [13] 0.300 0.325 0.350 0.375 0.400 0.425 0.450 0.475 0.500 0.525 0.550 0.575
+ [25] 0.600 0.625 0.650 0.675 0.700 0.725 0.750 0.775 0.800 0.825 0.850 0.875
+ [37] 0.900 0.925 0.950 0.975 1.000 1.025 1.050 1.075 1.100 1.125 1.150 1.175
+ [49] 1.200 1.225 1.250 1.275 1.300 1.325 1.350 1.375 1.400 1.425 1.450 1.475
+ [61] 1.500 1.525 1.550 1.575 1.600 1.625 1.650 1.675 1.700 1.725 1.750 1.775
+ [73] 1.800 1.825 1.850 1.875 1.900 1.925 1.950 1.975 2.000 2.025 2.050 2.075
+ [85] 2.100 2.125 2.150 2.175 2.200 2.225 2.250 2.275 2.300 2.325 2.350 2.375
+ [97] 2.400 2.425 2.450 2.475 2.500 2.525 2.550 2.575 2.600 2.625 2.650 2.675
+[109] 2.700 2.725 2.750 2.775 2.800 2.825 2.850 2.875 2.900 2.925 2.950 2.975
+[121] 3.000 3.025 3.050 3.075 3.100 3.125 3.150 3.175 3.200 3.225 3.250 3.275
+[133] 3.300 3.325 3.350 3.375 3.400 3.425 3.450 3.475 3.500 3.525 3.550 3.575
+[145] 3.600 3.625 3.650 3.675 3.700 3.725 3.750 3.775 3.800 3.825 3.850 3.875
+[157] 3.900 3.925 3.950 3.975 4.000 4.025 4.050 4.075 4.100 4.125 4.150 4.175
+[169] 4.200 4.225 4.250 4.275 4.300 4.325 4.350 4.375 4.400 4.425 4.450 4.475
+[181] 4.500 4.525 4.550 4.575 4.600 4.625 4.650 4.675 4.700 4.725 4.750 4.775
+[193] 4.800 4.825 4.850 4.875 4.900 4.925 4.950 4.975 5.000 5.025 5.050 5.075
+[205] 5.100 5.125 5.150 5.175 5.200 5.225 5.250 5.275 5.300 5.325 5.350 5.375
+[217] 5.400 5.425 5.450 5.475 5.500 5.525 5.550 5.575 5.600 5.625 5.650 5.675
+[229] 5.700 5.725 5.750 5.775 5.800 5.825 5.850 5.875 5.900 5.925 5.950 5.975
+[241] 6.000 6.025 6.050 6.075 6.100 6.125 6.150 6.175 6.200 6.225 6.250 6.275
+[253] 6.300 6.325 6.350 6.375 6.400 6.425 6.450 6.475 6.500 6.525 6.550 6.575
+[265] 6.600 6.625 6.650 6.675 6.700 6.725 6.750 6.775 6.800 6.825 6.850 6.875
+[277] 6.900 6.925 6.950 6.975 7.000 7.025 7.050 7.075 7.100 7.125 7.150 7.175
+[289] 7.200 7.225 7.250 7.275 7.300 7.325 7.350 7.375 7.400 7.425 7.450 7.475
+[301] 7.500 7.525 7.550 7.575 7.600 7.625 7.650 7.675 7.700 7.725 7.750 7.775
+[313] 7.800 7.825 7.850 7.875 7.900 7.925 7.950 7.975 8.000 8.025 8.050 8.075
+[325] 8.100 8.125 8.150 8.175 8.200 8.225 8.250 8.275 8.300 8.325 8.350 8.375
+[337] 8.400 8.425 8.450 8.475 8.500 8.525 8.550 8.575 8.600 8.625 8.650 8.675
+[349] 8.700 8.725 8.750 8.775 8.800 8.825 8.850 8.875 8.900 8.925 8.950 8.975
+[361] 9.000
+```
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+* my_seq
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+*tibble(x = my_seq)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+
+```
+# A tibble: 361 x 1
+       x
+   &lt;dbl&gt;
+ 1 0    
+ 2 0.025
+ 3 0.05 
+ 4 0.075
+ 5 0.1  
+ 6 0.125
+ 7 0.15 
+ 8 0.175
+ 9 0.2  
+10 0.225
+# … with 351 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+* crossing(y = my_seq)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+
+```
+# A tibble: 130,321 x 2
+       x     y
+   &lt;dbl&gt; &lt;dbl&gt;
+ 1     0 0    
+ 2     0 0.025
+ 3     0 0.05 
+ 4     0 0.075
+ 5     0 0.1  
+ 6     0 0.125
+ 7     0 0.15 
+ 8     0 0.175
+ 9     0 0.2  
+10     0 0.225
+# … with 130,311 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+* ggplot()
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+* aes(x = x, y = y)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+* geom_point(size = 0, alpha = .05)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_07_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+* aes(color = y)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_08_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+* aes(alpha = x)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_09_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+* scale_color_viridis_c()
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_10_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+* aes(x = x + sin(y)*.1)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_11_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+* aes(x = x + sin(y)*.3)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_12_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+* aes(x = x + sin(y)*.75)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_13_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+* aes(x = x + sin(y))
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_14_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+* aes(x = x + abs(sin(y))^1.1)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_15_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+* aes(x = x + abs(sin(y))^1.5)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_16_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+* aes(x = x + abs(sin(y))^1.75)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_17_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+* aes(x = x + sin(y)^2)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_18_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+* aes(x = log(x) + sin(y)^2)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_19_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+* aes(y = y + sin(x)*.1)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_20_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.1) +
+* aes(y = y + sin(x)*.3)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_21_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.1) +
+  aes(y = y + sin(x)*.3) +
+* aes(y = y + sin(x)*.75)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_22_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.1) +
+  aes(y = y + sin(x)*.3) +
+  aes(y = y + sin(x)*.75) +
+* aes(y = y + sin(x))
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_23_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.1) +
+  aes(y = y + sin(x)*.3) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+* aes(y = y + abs(sin(x))^1.1)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_24_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.1) +
+  aes(y = y + sin(x)*.3) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + abs(sin(x))^1.1) +
+* aes(y = y + abs(sin(x))^1.5)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_25_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.1) +
+  aes(y = y + sin(x)*.3) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + abs(sin(x))^1.1) +
+  aes(y = y + abs(sin(x))^1.5) +
+* aes(y = y + abs(sin(x))^1.75)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_26_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.1) +
+  aes(y = y + sin(x)*.3) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + abs(sin(x))^1.1) +
+  aes(y = y + abs(sin(x))^1.5) +
+  aes(y = y + abs(sin(x))^1.75) +
+* aes(y = y + sin(x)^2)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_27_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.1) +
+  aes(y = y + sin(x)*.3) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + abs(sin(x))^1.1) +
+  aes(y = y + abs(sin(x))^1.5) +
+  aes(y = y + abs(sin(x))^1.75) +
+  aes(y = y + sin(x)^2) +
+* aes(y = log(y) + sin(x)^2)
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_28_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.1) +
+  aes(y = y + sin(x)*.3) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + abs(sin(x))^1.1) +
+  aes(y = y + abs(sin(x))^1.5) +
+  aes(y = y + abs(sin(x))^1.75) +
+  aes(y = y + sin(x)^2) +
+  aes(y = log(y) + sin(x)^2) +
+* coord_equal()
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_29_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.1) +
+  aes(y = y + sin(x)*.3) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + abs(sin(x))^1.1) +
+  aes(y = y + abs(sin(x))^1.5) +
+  aes(y = y + abs(sin(x))^1.75) +
+  aes(y = y + sin(x)^2) +
+  aes(y = log(y) + sin(x)^2) +
+  coord_equal() +
+* theme_void()
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_30_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-stingray_high_res-auto[
+
+```r
+seq(0,9, by = 0.025) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(size = 0, alpha = .05) +
+  aes(color = y) +
+  aes(alpha = x) +
+  scale_color_viridis_c() +
+  aes(x = x + sin(y)*.1) +
+  aes(x = x + sin(y)*.3) +
+  aes(x = x + sin(y)*.75) +
+  aes(x = x + sin(y)) +
+  aes(x = x + abs(sin(y))^1.1) +
+  aes(x = x + abs(sin(y))^1.5) +
+  aes(x = x + abs(sin(y))^1.75) +
+  aes(x = x + sin(y)^2) +
+  aes(x = log(x) + sin(y)^2) +
+  aes(y = y + sin(x)*.1) +
+  aes(y = y + sin(x)*.3) +
+  aes(y = y + sin(x)*.75) +
+  aes(y = y + sin(x)) +
+  aes(y = y + abs(sin(x))^1.1) +
+  aes(y = y + abs(sin(x))^1.5) +
+  aes(y = y + abs(sin(x))^1.75) +
+  aes(y = y + sin(x)^2) +
+  aes(y = log(y) + sin(x)^2) +
+  coord_equal() +
+  theme_void()  +
+* theme(legend.position = "none")
+```
+]
+ 
+.panel2-stingray_high_res-auto[
+![](generative_art_files/figure-html/stingray_high_res_auto_31_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-stingray_high_res-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-stingray_high_res-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-stingray_high_res-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+class: inverse, center, middle
+
+# another rose
+
+---
+
+
+
+
+count: false
+
+&lt;img src="generative_art_files/figure-html/rosy_1_01_output-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+&lt;style&gt;
+.panel1-rosy-1 {
+  color: black;
+  width: 99%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-rosy-1 {
+  color: black;
+  width: NA%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-rosy-1 {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+---
+
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+*seq(-12,12, by = 0.04)
+```
+]
+ 
+.panel2-rosy-auto[
+
+```
+  [1] -12.00 -11.96 -11.92 -11.88 -11.84 -11.80 -11.76 -11.72 -11.68 -11.64
+ [11] -11.60 -11.56 -11.52 -11.48 -11.44 -11.40 -11.36 -11.32 -11.28 -11.24
+ [21] -11.20 -11.16 -11.12 -11.08 -11.04 -11.00 -10.96 -10.92 -10.88 -10.84
+ [31] -10.80 -10.76 -10.72 -10.68 -10.64 -10.60 -10.56 -10.52 -10.48 -10.44
+ [41] -10.40 -10.36 -10.32 -10.28 -10.24 -10.20 -10.16 -10.12 -10.08 -10.04
+ [51] -10.00  -9.96  -9.92  -9.88  -9.84  -9.80  -9.76  -9.72  -9.68  -9.64
+ [61]  -9.60  -9.56  -9.52  -9.48  -9.44  -9.40  -9.36  -9.32  -9.28  -9.24
+ [71]  -9.20  -9.16  -9.12  -9.08  -9.04  -9.00  -8.96  -8.92  -8.88  -8.84
+ [81]  -8.80  -8.76  -8.72  -8.68  -8.64  -8.60  -8.56  -8.52  -8.48  -8.44
+ [91]  -8.40  -8.36  -8.32  -8.28  -8.24  -8.20  -8.16  -8.12  -8.08  -8.04
+[101]  -8.00  -7.96  -7.92  -7.88  -7.84  -7.80  -7.76  -7.72  -7.68  -7.64
+[111]  -7.60  -7.56  -7.52  -7.48  -7.44  -7.40  -7.36  -7.32  -7.28  -7.24
+[121]  -7.20  -7.16  -7.12  -7.08  -7.04  -7.00  -6.96  -6.92  -6.88  -6.84
+[131]  -6.80  -6.76  -6.72  -6.68  -6.64  -6.60  -6.56  -6.52  -6.48  -6.44
+[141]  -6.40  -6.36  -6.32  -6.28  -6.24  -6.20  -6.16  -6.12  -6.08  -6.04
+[151]  -6.00  -5.96  -5.92  -5.88  -5.84  -5.80  -5.76  -5.72  -5.68  -5.64
+[161]  -5.60  -5.56  -5.52  -5.48  -5.44  -5.40  -5.36  -5.32  -5.28  -5.24
+[171]  -5.20  -5.16  -5.12  -5.08  -5.04  -5.00  -4.96  -4.92  -4.88  -4.84
+[181]  -4.80  -4.76  -4.72  -4.68  -4.64  -4.60  -4.56  -4.52  -4.48  -4.44
+[191]  -4.40  -4.36  -4.32  -4.28  -4.24  -4.20  -4.16  -4.12  -4.08  -4.04
+[201]  -4.00  -3.96  -3.92  -3.88  -3.84  -3.80  -3.76  -3.72  -3.68  -3.64
+[211]  -3.60  -3.56  -3.52  -3.48  -3.44  -3.40  -3.36  -3.32  -3.28  -3.24
+[221]  -3.20  -3.16  -3.12  -3.08  -3.04  -3.00  -2.96  -2.92  -2.88  -2.84
+[231]  -2.80  -2.76  -2.72  -2.68  -2.64  -2.60  -2.56  -2.52  -2.48  -2.44
+[241]  -2.40  -2.36  -2.32  -2.28  -2.24  -2.20  -2.16  -2.12  -2.08  -2.04
+[251]  -2.00  -1.96  -1.92  -1.88  -1.84  -1.80  -1.76  -1.72  -1.68  -1.64
+[261]  -1.60  -1.56  -1.52  -1.48  -1.44  -1.40  -1.36  -1.32  -1.28  -1.24
+[271]  -1.20  -1.16  -1.12  -1.08  -1.04  -1.00  -0.96  -0.92  -0.88  -0.84
+[281]  -0.80  -0.76  -0.72  -0.68  -0.64  -0.60  -0.56  -0.52  -0.48  -0.44
+[291]  -0.40  -0.36  -0.32  -0.28  -0.24  -0.20  -0.16  -0.12  -0.08  -0.04
+[301]   0.00   0.04   0.08   0.12   0.16   0.20   0.24   0.28   0.32   0.36
+[311]   0.40   0.44   0.48   0.52   0.56   0.60   0.64   0.68   0.72   0.76
+[321]   0.80   0.84   0.88   0.92   0.96   1.00   1.04   1.08   1.12   1.16
+[331]   1.20   1.24   1.28   1.32   1.36   1.40   1.44   1.48   1.52   1.56
+[341]   1.60   1.64   1.68   1.72   1.76   1.80   1.84   1.88   1.92   1.96
+[351]   2.00   2.04   2.08   2.12   2.16   2.20   2.24   2.28   2.32   2.36
+[361]   2.40   2.44   2.48   2.52   2.56   2.60   2.64   2.68   2.72   2.76
+[371]   2.80   2.84   2.88   2.92   2.96   3.00   3.04   3.08   3.12   3.16
+[381]   3.20   3.24   3.28   3.32   3.36   3.40   3.44   3.48   3.52   3.56
+[391]   3.60   3.64   3.68   3.72   3.76   3.80   3.84   3.88   3.92   3.96
+[401]   4.00   4.04   4.08   4.12   4.16   4.20   4.24   4.28   4.32   4.36
+[411]   4.40   4.44   4.48   4.52   4.56   4.60   4.64   4.68   4.72   4.76
+[421]   4.80   4.84   4.88   4.92   4.96   5.00   5.04   5.08   5.12   5.16
+[431]   5.20   5.24   5.28   5.32   5.36   5.40   5.44   5.48   5.52   5.56
+[441]   5.60   5.64   5.68   5.72   5.76   5.80   5.84   5.88   5.92   5.96
+[451]   6.00   6.04   6.08   6.12   6.16   6.20   6.24   6.28   6.32   6.36
+[461]   6.40   6.44   6.48   6.52   6.56   6.60   6.64   6.68   6.72   6.76
+[471]   6.80   6.84   6.88   6.92   6.96   7.00   7.04   7.08   7.12   7.16
+[481]   7.20   7.24   7.28   7.32   7.36   7.40   7.44   7.48   7.52   7.56
+[491]   7.60   7.64   7.68   7.72   7.76   7.80   7.84   7.88   7.92   7.96
+[501]   8.00   8.04   8.08   8.12   8.16   8.20   8.24   8.28   8.32   8.36
+[511]   8.40   8.44   8.48   8.52   8.56   8.60   8.64   8.68   8.72   8.76
+[521]   8.80   8.84   8.88   8.92   8.96   9.00   9.04   9.08   9.12   9.16
+[531]   9.20   9.24   9.28   9.32   9.36   9.40   9.44   9.48   9.52   9.56
+[541]   9.60   9.64   9.68   9.72   9.76   9.80   9.84   9.88   9.92   9.96
+[551]  10.00  10.04  10.08  10.12  10.16  10.20  10.24  10.28  10.32  10.36
+[561]  10.40  10.44  10.48  10.52  10.56  10.60  10.64  10.68  10.72  10.76
+[571]  10.80  10.84  10.88  10.92  10.96  11.00  11.04  11.08  11.12  11.16
+[581]  11.20  11.24  11.28  11.32  11.36  11.40  11.44  11.48  11.52  11.56
+[591]  11.60  11.64  11.68  11.72  11.76  11.80  11.84  11.88  11.92  11.96
+[601]  12.00
+```
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+* my_seq
+```
+]
+ 
+.panel2-rosy-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+*tibble(x = my_seq)
+```
+]
+ 
+.panel2-rosy-auto[
+
+```
+# A tibble: 601 x 1
+       x
+   &lt;dbl&gt;
+ 1 -12  
+ 2 -12.0
+ 3 -11.9
+ 4 -11.9
+ 5 -11.8
+ 6 -11.8
+ 7 -11.8
+ 8 -11.7
+ 9 -11.7
+10 -11.6
+# … with 591 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+* crossing(y = my_seq)
+```
+]
+ 
+.panel2-rosy-auto[
+
+```
+# A tibble: 361,201 x 2
+       x     y
+   &lt;dbl&gt; &lt;dbl&gt;
+ 1   -12 -12  
+ 2   -12 -12.0
+ 3   -12 -11.9
+ 4   -12 -11.9
+ 5   -12 -11.8
+ 6   -12 -11.8
+ 7   -12 -11.8
+ 8   -12 -11.7
+ 9   -12 -11.7
+10   -12 -11.6
+# … with 361,191 more rows
+```
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+* ggplot()
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+* aes(x = x, y = y)
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+* geom_point(alpha = 0.05,
+*            color = "darkred",
+*            size = 0)
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_07_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+* aes(x = x + .1 * sin(y))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_08_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+* aes(x = x + .3 * sin(y))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_09_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+* aes(x = x + .7 * sin(y))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_10_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+* aes(x = x + 1.5 * sin(y))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_11_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+* aes(x = x + pi * sin(y))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_12_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+* aes(y = y + .1 * sin(x))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_13_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+  aes(y = y + .1 * sin(x)) +
+* aes(y = y + .3 * sin(x))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_14_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+  aes(y = y + .1 * sin(x)) +
+  aes(y = y + .3 * sin(x)) +
+* aes(y = y + .7 * sin(x))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_15_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+  aes(y = y + .1 * sin(x)) +
+  aes(y = y + .3 * sin(x)) +
+  aes(y = y + .7 * sin(x)) +
+* aes(y = y + 1.5 * sin(x))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_16_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+  aes(y = y + .1 * sin(x)) +
+  aes(y = y + .3 * sin(x)) +
+  aes(y = y + .7 * sin(x)) +
+  aes(y = y + 1.5 * sin(x)) +
+* aes(y = y + pi * sin(x))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_17_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+  aes(y = y + .1 * sin(x)) +
+  aes(y = y + .3 * sin(x)) +
+  aes(y = y + .7 * sin(x)) +
+  aes(y = y + 1.5 * sin(x)) +
+  aes(y = y + pi * sin(x)) +
+* theme_void()
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_18_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+  aes(y = y + .1 * sin(x)) +
+  aes(y = y + .3 * sin(x)) +
+  aes(y = y + .7 * sin(x)) +
+  aes(y = y + 1.5 * sin(x)) +
+  aes(y = y + pi * sin(x)) +
+  theme_void() +
+* scale_y_reverse()
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_19_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+  aes(y = y + .1 * sin(x)) +
+  aes(y = y + .3 * sin(x)) +
+  aes(y = y + .7 * sin(x)) +
+  aes(y = y + 1.5 * sin(x)) +
+  aes(y = y + pi * sin(x)) +
+  theme_void() +
+  scale_y_reverse() +
+* scale_x_continuous(limits = c(-50, 50))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_20_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+  aes(y = y + .1 * sin(x)) +
+  aes(y = y + .3 * sin(x)) +
+  aes(y = y + .7 * sin(x)) +
+  aes(y = y + 1.5 * sin(x)) +
+  aes(y = y + pi * sin(x)) +
+  theme_void() +
+  scale_y_reverse() +
+  scale_x_continuous(limits = c(-50, 50)) +
+* coord_polar()
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_21_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+  aes(y = y + .1 * sin(x)) +
+  aes(y = y + .3 * sin(x)) +
+  aes(y = y + .7 * sin(x)) +
+  aes(y = y + 1.5 * sin(x)) +
+  aes(y = y + pi * sin(x)) +
+  theme_void() +
+  scale_y_reverse() +
+  scale_x_continuous(limits = c(-50, 50)) +
+  coord_polar() +
+* scale_x_continuous(limits = c(-30, 30))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_22_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+  aes(y = y + .1 * sin(x)) +
+  aes(y = y + .3 * sin(x)) +
+  aes(y = y + .7 * sin(x)) +
+  aes(y = y + 1.5 * sin(x)) +
+  aes(y = y + pi * sin(x)) +
+  theme_void() +
+  scale_y_reverse() +
+  scale_x_continuous(limits = c(-50, 50)) +
+  coord_polar() +
+  scale_x_continuous(limits = c(-30, 30)) +
+* scale_x_continuous(limits = c(-25, 25))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_23_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+  aes(y = y + .1 * sin(x)) +
+  aes(y = y + .3 * sin(x)) +
+  aes(y = y + .7 * sin(x)) +
+  aes(y = y + 1.5 * sin(x)) +
+  aes(y = y + pi * sin(x)) +
+  theme_void() +
+  scale_y_reverse() +
+  scale_x_continuous(limits = c(-50, 50)) +
+  coord_polar() +
+  scale_x_continuous(limits = c(-30, 30)) +
+  scale_x_continuous(limits = c(-25, 25)) +
+* scale_x_continuous(limits = c(-18, 18))
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_24_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-rosy-auto[
+
+```r
+seq(-12,12, by = 0.04) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x, y = y) +
+  geom_point(alpha = 0.05,
+             color = "darkred",
+             size = 0) +
+  aes(x = x + .1 * sin(y)) +
+  aes(x = x + .3 * sin(y)) +
+  aes(x = x + .7 * sin(y)) +
+  aes(x = x + 1.5 * sin(y)) +
+  aes(x = x + pi * sin(y)) +
+  aes(y = y + .1 * sin(x)) +
+  aes(y = y + .3 * sin(x)) +
+  aes(y = y + .7 * sin(x)) +
+  aes(y = y + 1.5 * sin(x)) +
+  aes(y = y + pi * sin(x)) +
+  theme_void() +
+  scale_y_reverse() +
+  scale_x_continuous(limits = c(-50, 50)) +
+  coord_polar() +
+  scale_x_continuous(limits = c(-30, 30)) +
+  scale_x_continuous(limits = c(-25, 25)) +
+  scale_x_continuous(limits = c(-18, 18)) +
+* scale_x_continuous()
+```
+]
+ 
+.panel2-rosy-auto[
+![](generative_art_files/figure-html/rosy_auto_25_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-rosy-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-rosy-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-rosy-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+---
+
+count: false
+ 
+Dandalion: One less deconstructed
+.panel1-dandelion-auto[
+
+```r
+*seq(-2,2, by = 0.01)
+```
+]
+ 
+.panel2-dandelion-auto[
+
+```
+  [1] -2.00 -1.99 -1.98 -1.97 -1.96 -1.95 -1.94 -1.93 -1.92 -1.91 -1.90 -1.89
+ [13] -1.88 -1.87 -1.86 -1.85 -1.84 -1.83 -1.82 -1.81 -1.80 -1.79 -1.78 -1.77
+ [25] -1.76 -1.75 -1.74 -1.73 -1.72 -1.71 -1.70 -1.69 -1.68 -1.67 -1.66 -1.65
+ [37] -1.64 -1.63 -1.62 -1.61 -1.60 -1.59 -1.58 -1.57 -1.56 -1.55 -1.54 -1.53
+ [49] -1.52 -1.51 -1.50 -1.49 -1.48 -1.47 -1.46 -1.45 -1.44 -1.43 -1.42 -1.41
+ [61] -1.40 -1.39 -1.38 -1.37 -1.36 -1.35 -1.34 -1.33 -1.32 -1.31 -1.30 -1.29
+ [73] -1.28 -1.27 -1.26 -1.25 -1.24 -1.23 -1.22 -1.21 -1.20 -1.19 -1.18 -1.17
+ [85] -1.16 -1.15 -1.14 -1.13 -1.12 -1.11 -1.10 -1.09 -1.08 -1.07 -1.06 -1.05
+ [97] -1.04 -1.03 -1.02 -1.01 -1.00 -0.99 -0.98 -0.97 -0.96 -0.95 -0.94 -0.93
+[109] -0.92 -0.91 -0.90 -0.89 -0.88 -0.87 -0.86 -0.85 -0.84 -0.83 -0.82 -0.81
+[121] -0.80 -0.79 -0.78 -0.77 -0.76 -0.75 -0.74 -0.73 -0.72 -0.71 -0.70 -0.69
+[133] -0.68 -0.67 -0.66 -0.65 -0.64 -0.63 -0.62 -0.61 -0.60 -0.59 -0.58 -0.57
+[145] -0.56 -0.55 -0.54 -0.53 -0.52 -0.51 -0.50 -0.49 -0.48 -0.47 -0.46 -0.45
+[157] -0.44 -0.43 -0.42 -0.41 -0.40 -0.39 -0.38 -0.37 -0.36 -0.35 -0.34 -0.33
+[169] -0.32 -0.31 -0.30 -0.29 -0.28 -0.27 -0.26 -0.25 -0.24 -0.23 -0.22 -0.21
+[181] -0.20 -0.19 -0.18 -0.17 -0.16 -0.15 -0.14 -0.13 -0.12 -0.11 -0.10 -0.09
+[193] -0.08 -0.07 -0.06 -0.05 -0.04 -0.03 -0.02 -0.01  0.00  0.01  0.02  0.03
+[205]  0.04  0.05  0.06  0.07  0.08  0.09  0.10  0.11  0.12  0.13  0.14  0.15
+[217]  0.16  0.17  0.18  0.19  0.20  0.21  0.22  0.23  0.24  0.25  0.26  0.27
+[229]  0.28  0.29  0.30  0.31  0.32  0.33  0.34  0.35  0.36  0.37  0.38  0.39
+[241]  0.40  0.41  0.42  0.43  0.44  0.45  0.46  0.47  0.48  0.49  0.50  0.51
+[253]  0.52  0.53  0.54  0.55  0.56  0.57  0.58  0.59  0.60  0.61  0.62  0.63
+[265]  0.64  0.65  0.66  0.67  0.68  0.69  0.70  0.71  0.72  0.73  0.74  0.75
+[277]  0.76  0.77  0.78  0.79  0.80  0.81  0.82  0.83  0.84  0.85  0.86  0.87
+[289]  0.88  0.89  0.90  0.91  0.92  0.93  0.94  0.95  0.96  0.97  0.98  0.99
+[301]  1.00  1.01  1.02  1.03  1.04  1.05  1.06  1.07  1.08  1.09  1.10  1.11
+[313]  1.12  1.13  1.14  1.15  1.16  1.17  1.18  1.19  1.20  1.21  1.22  1.23
+[325]  1.24  1.25  1.26  1.27  1.28  1.29  1.30  1.31  1.32  1.33  1.34  1.35
+[337]  1.36  1.37  1.38  1.39  1.40  1.41  1.42  1.43  1.44  1.45  1.46  1.47
+[349]  1.48  1.49  1.50  1.51  1.52  1.53  1.54  1.55  1.56  1.57  1.58  1.59
+[361]  1.60  1.61  1.62  1.63  1.64  1.65  1.66  1.67  1.68  1.69  1.70  1.71
+[373]  1.72  1.73  1.74  1.75  1.76  1.77  1.78  1.79  1.80  1.81  1.82  1.83
+[385]  1.84  1.85  1.86  1.87  1.88  1.89  1.90  1.91  1.92  1.93  1.94  1.95
+[397]  1.96  1.97  1.98  1.99  2.00
+```
+]
+
+---
+count: false
+ 
+Dandalion: One less deconstructed
+.panel1-dandelion-auto[
+
+```r
+seq(-2,2, by = 0.01) -&gt;
+* my_seq
+```
+]
+ 
+.panel2-dandelion-auto[
+
+]
+
+---
+count: false
+ 
+Dandalion: One less deconstructed
+.panel1-dandelion-auto[
+
+```r
+seq(-2,2, by = 0.01) -&gt;
+  my_seq
+
+*tibble(x = my_seq)
+```
+]
+ 
+.panel2-dandelion-auto[
+
+```
+# A tibble: 401 x 1
+       x
+   &lt;dbl&gt;
+ 1 -2   
+ 2 -1.99
+ 3 -1.98
+ 4 -1.97
+ 5 -1.96
+ 6 -1.95
+ 7 -1.94
+ 8 -1.93
+ 9 -1.92
+10 -1.91
+# … with 391 more rows
+```
+]
+
+---
+count: false
+ 
+Dandalion: One less deconstructed
+.panel1-dandelion-auto[
+
+```r
+seq(-2,2, by = 0.01) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+* crossing(y = my_seq)
+```
+]
+ 
+.panel2-dandelion-auto[
+
+```
+# A tibble: 160,801 x 2
+       x     y
+   &lt;dbl&gt; &lt;dbl&gt;
+ 1    -2 -2   
+ 2    -2 -1.99
+ 3    -2 -1.98
+ 4    -2 -1.97
+ 5    -2 -1.96
+ 6    -2 -1.95
+ 7    -2 -1.94
+ 8    -2 -1.93
+ 9    -2 -1.92
+10    -2 -1.91
+# … with 160,791 more rows
+```
+]
+
+---
+count: false
+ 
+Dandalion: One less deconstructed
+.panel1-dandelion-auto[
+
+```r
+seq(-2,2, by = 0.01) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+* ggplot()
+```
+]
+ 
+.panel2-dandelion-auto[
+![](generative_art_files/figure-html/dandelion_auto_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Dandalion: One less deconstructed
+.panel1-dandelion-auto[
+
+```r
+seq(-2,2, by = 0.01) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+* aes(x = x^3 - sin(y))
+```
+]
+ 
+.panel2-dandelion-auto[
+![](generative_art_files/figure-html/dandelion_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Dandalion: One less deconstructed
+.panel1-dandelion-auto[
+
+```r
+seq(-2,2, by = 0.01) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x^3 - sin(y)) +
+* aes(y = y^3 - cos(x))
+```
+]
+ 
+.panel2-dandelion-auto[
+![](generative_art_files/figure-html/dandelion_auto_07_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Dandalion: One less deconstructed
+.panel1-dandelion-auto[
+
+```r
+seq(-2,2, by = 0.01) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x^3 - sin(y)) +
+  aes(y = y^3 - cos(x)) +
+* geom_point(alpha = 0.05,
+*            size = 0)
+```
+]
+ 
+.panel2-dandelion-auto[
+![](generative_art_files/figure-html/dandelion_auto_08_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Dandalion: One less deconstructed
+.panel1-dandelion-auto[
+
+```r
+seq(-2,2, by = 0.01) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x^3 - sin(y)) +
+  aes(y = y^3 - cos(x)) +
+  geom_point(alpha = 0.05,
+             size = 0) +
+* theme_void()
+```
+]
+ 
+.panel2-dandelion-auto[
+![](generative_art_files/figure-html/dandelion_auto_09_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Dandalion: One less deconstructed
+.panel1-dandelion-auto[
+
+```r
+seq(-2,2, by = 0.01) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x^3 - sin(y)) +
+  aes(y = y^3 - cos(x)) +
+  geom_point(alpha = 0.05,
+             size = 0) +
+  theme_void()+
+* coord_polar()
+```
+]
+ 
+.panel2-dandelion-auto[
+![](generative_art_files/figure-html/dandelion_auto_10_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Dandalion: One less deconstructed
+.panel1-dandelion-auto[
+
+```r
+seq(-2,2, by = 0.01) -&gt;
+  my_seq
+
+tibble(x = my_seq) %&gt;%
+  crossing(y = my_seq) %&gt;%
+  ggplot() +
+  aes(x = x^3 - sin(y)) +
+  aes(y = y^3 - cos(x)) +
+  geom_point(alpha = 0.05,
+             size = 0) +
+  theme_void()+
+  coord_polar()+
+* labs(subtitle = "Dandelion")
+```
+]
+ 
+.panel2-dandelion-auto[
+![](generative_art_files/figure-html/dandelion_auto_11_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-dandelion-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-dandelion-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-dandelion-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+&lt;!-- adjust font size in this css code chunk, currently 80 --&gt;
+
+&lt;style type="text/css"&gt;
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+&lt;/style&gt;
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:10",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
