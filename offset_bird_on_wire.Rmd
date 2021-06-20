@@ -1,0 +1,206 @@
+---
+title: "Offsets"
+author: Me, an Rmarkdown writer and flipbook builder
+output: html_document
+---
+
+This template is mostly about offsetting using quotient and remainder operators.  In visualizations, using the together can help wrap elements.  
+
+```{r, include=F}
+library(tidyverse)
+library(flipbookr)
+knitr::opts_chunk$set(message = F, warning = F)
+```
+
+
+```{r}
+library(tidyverse)
+```
+
+
+# Wrapping w/ quotients and remainders
+
+```{r basics, echo = F}
+LETTERS %>% 
+  tibble(unit = .) %>% 
+  mutate(rank = (1:n())-1) %>% 
+  mutate(rank_q_4 = rank %/% 4) %>% 
+  mutate(rank_r_4 = rank %% 4) %>% 
+  ggplot() +
+  aes(x = rank) +
+  aes(y = 0) +
+  geom_label(aes(label = unit),
+             alpha = .3) +
+  aes(y = unit) +
+  aes(y = rank_q_4) +
+  aes(x = rank_r_4) +
+  aes(y = -rank_q_4) +
+  aes(color = as.character(rank %/% 4 %% 2)) +
+  aes(fill = rank %% 10) +
+  scale_fill_viridis_c()
+```
+
+
+
+```{r}
+options(tibble(.rows = 80))
+embed_flipbook(chunk_name = "basics", 
+               use_share_again = T,
+               use_embed_xaringan = T,
+                       font_size = 80)
+```
+
+
+# checker board
+
+```{r checker, echo = F}
+LETTERS[1:25] %>% 
+  tibble(unit = .) %>% 
+  mutate(rank = (1:n())-1) %>% 
+  ggplot() +
+  aes(x = rank %% 5) +
+  aes(y = -(rank %/% 5)) +
+  geom_label(aes(label = unit),
+             alpha = .3) +
+  aes(fill = rank %% 2) +
+  aes(fill = as.character(rank %% 2)) +
+  geom_tile() +
+  coord_equal() +
+  theme_void() +
+  theme(legend.position = "none") +
+  theme(plot.background = element_rect(fill = "grey75")) +
+  scale_fill_manual(values = c("beige", "plum3"))
+```
+
+
+
+
+```{r}
+options(tibble(.rows = 80))
+embed_flipbook(chunk_name = "checker", 
+               use_share_again = T,
+               use_embed_xaringan = T,
+                       font_size = 80)
+```
+
+
+# Offset from a wire
+
+
+
+
+```{r diamond, fig.height = 5, fig.width=9}
+offset <- .15
+set.seed(12342)
+tibble(period = 1:22) %>% 
+  crossing(tibble(unit = LETTERS[1:6])) %>% 
+  sample_n(60, replace = T) %>% 
+  count(unit, period) %>% 
+  mutate(unit_numeric = as.numeric(as.factor(unit))) %>% 
+  # if in even or odd period, shift up or down
+  mutate(unit_offset = period %% 2) %>% 
+  mutate(unit_numeric_plus = unit_numeric + 
+           unit_offset*offset - offset/2) %>% 
+  ggplot() +
+  aes(x = period) +
+  aes(y = unit) +
+  aes(y = unit_numeric) +
+  geom_hline(aes(yintercept = unit_numeric),
+             linetype = "dashed") +
+  geom_point(size = 12, 
+             shape = "diamond") +
+  aes(y = unit_numeric_plus) +
+  aes(color = n) +
+  geom_text(aes(label = n),
+            fontface = "bold",
+            size = 5,
+            color = "oldlace") 
+```
+
+
+
+
+```{r}
+embed_flipbook(chunk_name = "diamond", 
+               use_share_again = T,
+               use_embed_xaringan = T,
+                       font_size = 80,
+               chunk_options = " fig.height = 5, fig.width=9")
+```
+
+
+
+
+```{r nut, fig.height = 5, fig.width=9}
+offset <- .15
+set.seed(12342)
+c(LETTERS, letters, 1:26) %>% 
+  tibble(unit = .) %>% 
+  mutate(unit = fct_inorder(unit)) %>% 
+  mutate(rank = (1:n())-1) %>% 
+  mutate(rank_q_4 = rank %/% 8) %>% 
+  mutate(rank_r_4 = rank %% 8) %>% 
+  ggplot() +
+  aes(x = rank) +
+  aes(y = 0) +
+  geom_label(aes(label = unit),
+             alpha = .8) +
+  aes(y = unit) +
+  aes(y = rank_q_4) +
+  aes(x = rank_r_4) +
+  aes(y = -rank_q_4) +
+  ggdark::dark_theme_minimal() +
+  aes(fill = rank %% 10) +
+  scale_fill_viridis_c(option = "magma") ->
+wraps
+```
+
+```{r}
+wraps +
+  aes(fill = (1+rank) %% 10) +
+  aes(fill = (2+rank) %% 10) +
+  aes(fill = (3+rank) %% 10) +
+  aes(fill = (4+rank) %% 10) 
+```
+
+
+```{r}
+wraps +
+  aes(fill = rank %% 8) +
+  aes(fill = rank %/% 8) +
+  aes(fill = -rank %% 8) +
+  aes(fill = -rank %/% 8) +
+  aes(fill = rank %% 8 %% 4) +
+  aes(fill = -rank %% 8 %% 4) +
+  aes(fill = rank %% 8 %% 2) +
+  aes(fill = -rank %% 8 %% 3) +
+  aes(fill = -rank %% 8 %% 4) +
+  aes(fill = -rank %% 8 %% 5) +
+  aes(fill = -rank %% 8 %% 6) +
+  aes(fill = -rank %/% 8 %% 7)
+```
+
+
+
+
+
+```{r}
+embed_flipbook(chunk_name = "nut", 
+               use_share_again = T,
+               use_embed_xaringan = T,
+                       font_size = 80,
+               chunk_options = " fig.height = 5, fig.width=9")
+```
+
+
+
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+```

@@ -57,7 +57,7 @@ g <- mtcars %>% ggplot() +
 
 
 ```{css, eval = TRUE, echo = FALSE}
-.remark-code{line-height: 1.5; font-size: 60%}
+.remark-code{line-height: 1.5; font-size: 80%}
 
 @media print {
   .has-continuation {

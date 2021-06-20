@@ -43,11 +43,10 @@ g <- mtcars %>% ggplot() +
 flipbookr::embed_flipbook("stats",
                           url = "embedded_flipbooks/first_one.html",
                           rmd_path = "embedded_flipbooks/first_one.Rmd",
-                            
                           use_share_again = T,
                           use_embed_xaringan = T,
                           left_assign = T,
-                          font_size = 60,
+                          font_size = 100,
                             )
 ```
 
@@ -60,11 +59,13 @@ flipbookr::embed_flipbook("stats",
                           use_share_again = T,
                           use_embed_xaringan = T,
                           left_assign = T,
-                          font_size = 60,
+                          widths = c(1, 2),
+                          font_size = 80,
                           left_assign_add = "# inspect data of most recent layer 
                           layer_data(ifelse(length(g$layers)>0, 
                           length(g$layers),1))")
 ```
+
 
 
 

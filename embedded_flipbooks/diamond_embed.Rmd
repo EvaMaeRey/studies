@@ -1,0 +1,86 @@
+---
+title: "diamond"
+subtitle: ""
+author: ""
+output:
+  xaringan::moon_reader:
+    seal: FALSE
+    lib_dir: libs
+    css: [default, hygge, ninjutsu]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+
+```{r, include = F}
+options(knitr.duplicate.label = "allow")
+knitr::opts_chunk$set(fig.width = 6, message = FALSE, warning = FALSE, comment = "", cache = F)
+library(flipbookr)
+library(tidyverse)
+load("current_image.Rdata")
+```
+
+
+```{r, echo = F, eval = TRUE , message = F, warning = F}
+xaringanExtra::use_share_again()
+```
+
+
+```{r the_chunk, include = F}
+offset <- .15
+set.seed(12342)
+tibble(period = 1:22) %>% 
+  crossing(tibble(unit = LETTERS[1:6])) %>% 
+  sample_n(60, replace = T) %>% 
+  count(unit, period) %>% 
+  mutate(unit_numeric = as.numeric(as.factor(unit))) %>% 
+  # if in even or odd period, shift up or down
+  mutate(unit_offset = period %% 2) %>% 
+  mutate(unit_numeric_plus = unit_numeric + 
+           unit_offset*offset - offset/2) %>% 
+  ggplot() +
+  aes(x = period) +
+  aes(y = unit) +
+  aes(y = unit_numeric) +
+  geom_hline(aes(yintercept = unit_numeric),
+             linetype = "dashed") +
+  geom_point(size = 12, 
+             shape = "diamond") +
+  aes(y = unit_numeric_plus) +
+  aes(color = n) +
+  geom_text(aes(label = n),
+            fontface = "bold",
+            size = 5,
+            color = "oldlace") 
+```
+
+`r chunk_reveal(chunk_name = "the_chunk", break_type = "auto", ...)`
+
+
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+

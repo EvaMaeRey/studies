@@ -28,37 +28,227 @@
 
 
 count: false
+ 
 
-&lt;img src="my_code_embed_files/figure-html/the_chunk_user_01_output-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+.panel1-the_chunk-auto[
+
+```r
+*A &lt;- ggproto("A", NULL,
+* x = 1,
+* inc = function(self) {
+*   self$x &lt;- self$x + 1
+* }
+*) 
+```
+]
+ 
+.panel2-the_chunk-auto[
+
+]
 
 ---
 count: false
+ 
 
-&lt;img src="my_code_embed_files/figure-html/the_chunk_user_02_output-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+.panel1-the_chunk-auto[
+
+```r
+A &lt;- ggproto("A", NULL,
+  x = 1,
+  inc = function(self) {
+    self$x &lt;- self$x + 1
+  }
+)
+
+*A$x
+```
+]
+ 
+.panel2-the_chunk-auto[
+
+```
+[1] 1
+```
+]
 
 ---
 count: false
+ 
 
-&lt;img src="my_code_embed_files/figure-html/the_chunk_user_03_output-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+.panel1-the_chunk-auto[
+
+```r
+A &lt;- ggproto("A", NULL,
+  x = 1,
+  inc = function(self) {
+    self$x &lt;- self$x + 1
+  }
+)
+
+A$x
+*A$inc()
+```
+]
+ 
+.panel2-the_chunk-auto[
+
+```
+[1] 1
+```
+]
+
+---
+count: false
+ 
+
+.panel1-the_chunk-auto[
+
+```r
+A &lt;- ggproto("A", NULL,
+  x = 1,
+  inc = function(self) {
+    self$x &lt;- self$x + 1
+  }
+)
+
+A$x
+A$inc()
+*A$x
+```
+]
+ 
+.panel2-the_chunk-auto[
+
+```
+[1] 1
+```
+
+```
+[1] 2
+```
+]
+
+---
+count: false
+ 
+
+.panel1-the_chunk-auto[
+
+```r
+A &lt;- ggproto("A", NULL,
+  x = 1,
+  inc = function(self) {
+    self$x &lt;- self$x + 1
+  }
+)
+
+A$x
+A$inc()
+A$x
+*A$inc()
+```
+]
+ 
+.panel2-the_chunk-auto[
+
+```
+[1] 1
+```
+
+```
+[1] 2
+```
+]
+
+---
+count: false
+ 
+
+.panel1-the_chunk-auto[
+
+```r
+A &lt;- ggproto("A", NULL,
+  x = 1,
+  inc = function(self) {
+    self$x &lt;- self$x + 1
+  }
+)
+
+A$x
+A$inc()
+A$x
+A$inc()
+*A$inc()
+```
+]
+ 
+.panel2-the_chunk-auto[
+
+```
+[1] 1
+```
+
+```
+[1] 2
+```
+]
+
+---
+count: false
+ 
+
+.panel1-the_chunk-auto[
+
+```r
+A &lt;- ggproto("A", NULL,
+  x = 1,
+  inc = function(self) {
+    self$x &lt;- self$x + 1
+  }
+)
+
+A$x
+A$inc()
+A$x
+A$inc()
+A$inc()
+*A$x
+```
+]
+ 
+.panel2-the_chunk-auto[
+
+```
+[1] 1
+```
+
+```
+[1] 2
+```
+
+```
+[1] 4
+```
+]
 
 &lt;style&gt;
-.panel1-the_chunk-user {
+.panel1-the_chunk-auto {
   color: black;
-  width: 99%;
+  width: 38.6060606060606%;
   hight: 32%;
   float: left;
   padding-left: 1%;
   font-size: 80%
 }
-.panel2-the_chunk-user {
+.panel2-the_chunk-auto {
   color: black;
-  width: NA%;
+  width: 59.3939393939394%;
   hight: 32%;
   float: left;
   padding-left: 1%;
   font-size: 80%
 }
-.panel3-the_chunk-user {
+.panel3-the_chunk-auto {
   color: black;
   width: NA%;
   hight: 33%;
