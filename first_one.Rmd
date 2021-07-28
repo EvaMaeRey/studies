@@ -25,7 +25,7 @@ load("current_image.Rdata")
 ```
 
 
-```{r, echo = F, eval = TRUE , message = F, warning = F}
+```{r, echo = F, eval = FALSE , message = F, warning = F}
 xaringanExtra::use_share_again()
 ```
 
@@ -42,7 +42,7 @@ g <- mtcars %>% ggplot() +
   geom_boxplot(alpha = .4,
                color = "green",
                aes(group = cyl)) +
-  geom_vline(xintercept = 2.5) +
+  geom_vline(xintercept = 5) +
   geom_vline(aes(xintercept = mean(cyl))) +
   stat_summary(geom = "point",
                color = "red",
@@ -57,7 +57,7 @@ g <- mtcars %>% ggplot() +
 
 
 ```{css, eval = TRUE, echo = FALSE}
-.remark-code{line-height: 1.5; font-size: 60%}
+.remark-code{line-height: 1.5; font-size: 100%}
 
 @media print {
   .has-continuation {

@@ -3,15 +3,10 @@
   <head>
     <title>stats</title>
     <meta charset="utf-8" />
-    <meta name="author" content="" />
+    <script src="libs/header-attrs-2.6/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/hygge.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/ninjutsu.css" rel="stylesheet" />
-    <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
-    <link href="libs/shareon-1.4.1/shareon.min.css" rel="stylesheet" />
-    <script src="libs/shareon-1.4.1/shareon.min.js"></script>
-    <link href="libs/xaringanExtra-shareagain-0.2.1/shareagain.css" rel="stylesheet" />
-    <script src="libs/xaringanExtra-shareagain-0.2.1/shareagain.js"></script>
   </head>
   <body>
     <textarea id="source">
@@ -37,8 +32,7 @@ count: false
 
 g     %&gt;%
 # inspect data of most recent layer 
-                          layer_data(ifelse(length(g$layers)&gt;0, 
-                          length(g$layers),1))
+                          last_layer_data()
 ```
 ]
  
@@ -93,8 +87,7 @@ g &lt;- mtcars %&gt;% ggplot() +
 
 g     %&gt;%
 # inspect data of most recent layer 
-                          layer_data(ifelse(length(g$layers)&gt;0, 
-                          length(g$layers),1))
+                          last_layer_data()
 ```
 ]
  
@@ -150,8 +143,7 @@ g &lt;- mtcars %&gt;% ggplot() +
 
 g     %&gt;%
 # inspect data of most recent layer 
-                          layer_data(ifelse(length(g$layers)&gt;0, 
-                          length(g$layers),1))
+                          last_layer_data()
 ```
 ]
  
@@ -209,8 +201,7 @@ g &lt;- mtcars %&gt;% ggplot() +
 
 g     %&gt;%
 # inspect data of most recent layer 
-                          layer_data(ifelse(length(g$layers)&gt;0, 
-                          length(g$layers),1))
+                          last_layer_data()
 ```
 ]
  
@@ -244,8 +235,7 @@ g &lt;- mtcars %&gt;% ggplot() +
 
 g     %&gt;%
 # inspect data of most recent layer 
-                          layer_data(ifelse(length(g$layers)&gt;0, 
-                          length(g$layers),1))
+                          last_layer_data()
 ```
 ]
  
@@ -305,8 +295,7 @@ g &lt;- mtcars %&gt;% ggplot() +
 
 g     %&gt;%
 # inspect data of most recent layer 
-                          layer_data(ifelse(length(g$layers)&gt;0, 
-                          length(g$layers),1))
+                          last_layer_data()
 ```
 ]
  
@@ -367,8 +356,7 @@ g &lt;- mtcars %&gt;% ggplot() +
 
 g     %&gt;%
 # inspect data of most recent layer 
-                          layer_data(ifelse(length(g$layers)&gt;0, 
-                          length(g$layers),1))
+                          last_layer_data()
 ```
 ]
  
@@ -405,8 +393,7 @@ g &lt;- mtcars %&gt;% ggplot() +
 
 g     %&gt;%
 # inspect data of most recent layer 
-                          layer_data(ifelse(length(g$layers)&gt;0, 
-                          length(g$layers),1))
+                          last_layer_data()
 ```
 ]
  
@@ -450,8 +437,7 @@ g &lt;- mtcars %&gt;% ggplot() +
 
 g     %&gt;%
 # inspect data of most recent layer 
-                          layer_data(ifelse(length(g$layers)&gt;0, 
-                          length(g$layers),1))
+                          last_layer_data()
 ```
 ]
  
@@ -486,8 +472,7 @@ g &lt;- mtcars %&gt;% ggplot() +
 
 g     %&gt;%
 # inspect data of most recent layer 
-                          layer_data(ifelse(length(g$layers)&gt;0, 
-                          length(g$layers),1))
+                          last_layer_data()
 ```
 ]
  
@@ -558,8 +543,7 @@ g &lt;- mtcars %&gt;% ggplot() +
 
 g     %&gt;%
 # inspect data of most recent layer 
-                          layer_data(ifelse(length(g$layers)&gt;0, 
-                          length(g$layers),1))
+                          last_layer_data()
 ```
 ]
  
@@ -606,8 +590,7 @@ g &lt;- mtcars %&gt;% ggplot() +
 
 g     %&gt;%
 # inspect data of most recent layer 
-                          layer_data(ifelse(length(g$layers)&gt;0, 
-                          length(g$layers),1))
+                          last_layer_data()
 ```
 ]
  
@@ -677,6 +660,7 @@ code.r.hljs.remark-code:hover{
   border-style: solid;
 }
 &lt;/style&gt;
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

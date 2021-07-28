@@ -1,17 +1,29 @@
 ---
-title: "stats"
-output: html_document
+title: "ggplot dataframes"
+subtitle: ""
+author: "E. Reynolds"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, hygge, ninjutsu]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
 ---
+
 
 
 ```{r, include=FALSE}
 library(tidyverse)
 knitr::opts_chunk$set(echo = F, message = F, warning = F)
+library(flipbookr)
 ```
 
 
 
----
+
 
 
 
@@ -23,49 +35,42 @@ g <- mtcars %>% ggplot() +
                fun.data = mean_se) +
   geom_blank() +
   geom_point(alpha = .3) +
+  geom_point(color = "blue") +
+  geom_point(aes(color = "blue")) + 
   geom_boxplot(alpha = .2) +
   geom_boxplot(alpha = .4,
                color = "green",
                aes(group = cyl)) +
+  geom_boxplot(alpha = .4,
+               aes(color = cyl)) +
   geom_vline(xintercept = 5) +
-  geom_vline(aes(xintercept = mean(cyl))) +
+  geom_vline(aes(xintercept = mean(cyl)),
+             color = "plum") +
   stat_summary(geom = "point",
-               color = "red",
-               col = "goldenrod2", 
+               color = "goldenrod2", 
                size = 8,
                fun.y = "mean")
-
 ```
 
-# ggplot making pretty things ...
+`r chunk_reveal("stats", left_assign = T, title = "### ggplot plotting layers")`
 
-```{r}
-flipbookr::embed_flipbook("stats",
-                          url = "embedded_flipbooks/first_one.html",
-                          rmd_path = "embedded_flipbooks/first_one.Rmd",
-                          use_share_again = T,
-                          use_embed_xaringan = T,
-                          left_assign = T,
-                          font_size = 100,
-                            )
+---
+
+### a function for showing last layer data frame
+
+```{r, echo = T}
+last_layer_data <- function(plot){
+  
+  layer_data(plot, ifelse(length(plot$layers) >= 1, 
+                          length(plot$layers), 1))
+  
+}
 ```
 
+---
 
 
-# ... and computing in the background
-
-```{r}
-flipbookr::embed_flipbook("stats",
-                          use_share_again = T,
-                          use_embed_xaringan = T,
-                          left_assign = T,
-                          widths = c(1, 2),
-                          font_size = 80,
-                          left_assign_add = "# inspect data of most recent layer 
-                          layer_data(ifelse(length(g$layers)>0, 
-                          length(g$layers),1))")
-```
-
+`r chunk_reveal("stats", left_assign = T, left_assign_add = "# inspect data of most recent layer\nlast_layer_data()", widths = c(1, 2), title = "### ... dataframes computed for layers")`
 
 
 

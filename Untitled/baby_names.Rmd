@@ -1,0 +1,106 @@
+---
+title: "Viz-only {codehover} template"
+author: "Your Name"
+output: 
+  html_document:
+    css: ["codehoverStyle.css"]
+    includes:
+      after_body: codehoverJavascript.txt
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = F, 
+                      warning = F, dpi = 300)
+library(codehover)
+library(tidyverse)
+library(ggstream)
+library(babynames)
+
+babynames::babynames %>% 
+  group_by(year, sex) %>% 
+  arrange(-n) %>% 
+  slice(1:10) ->
+topnames
+
+options(scipen = 10)
+
+ggplot(topnames %>% 
+         filter(sex == "M") %>% 
+         filter(year >= 2000)) + 
+  aes(x = year) +
+  aes(y = n) +
+  aes(fill = name) +
+  scale_y_continuous(limits = c(-1000000, 1000000)) +
+  geom_stream(sorting = "onset") 
+  
+ggplot(babynames::babynames %>% 
+         filter(sex == "M") %>% 
+         filter(name %in% c("Peter", "Paul", "Mary")) %>% 
+         filter(year >= 2000)) + 
+  aes(x = year) +
+  aes(y = prop) +
+  aes(fill = name) +
+  # scale_y_continuous(limits = c(-1000000, 1000000)) +
+  geom_stream() 
+
+
+ggplot(babynames::babynames %>% 
+         filter(year >= 1980,
+                sex == "M")) +
+  aes(x = year, y = prop * 100) + 
+  aes(group = name) + 
+  geom_line(size = .05, aes(color = name %in% c("Peter", "Paul", "Mary"))) +
+  scale_color_manual(values = c("white", "magenta")) +
+  theme_dark() ->
+prop_male
+prop_male
+
+# plotly::ggplotly(prop_male, tooltip = c("x", "y", "group"))
+
+layer_data(last_plot())
+
+ggplot(topnames %>% 
+         filter(sex == "F") %>% 
+         filter(year >= 2000)) + 
+  aes(x = year) +
+  aes(y = prop) +
+  aes(fill = name) +
+  scale_fill_viridis_d() +
+  geom_stream(sorting = "onset") ->
+female_plot
+
+
+layer_data(female_plot, i = 1) 
+
+```
+
+```{r my_cars, eval=FALSE, echo=FALSE}
+ggplot(data = cars) +
+  aes(x = speed) +  
+  aes(y = dist) + 
+  geom_point(color = 'darkslateblue',
+             size = 4,
+             alpha = .8) +
+  theme_bw(base_size = 18) + 
+  scale_x_continuous(limits = c(0,25)) +
+  geom_smooth() +
+  labs(y = "stopping distance") + 
+  labs(title = 'A ggplot for the rest of us') + 
+  labs(subtitle = 'Explicitly showing the R workflow') +
+  theme(plot.title.position = "plot")
+```
+
+```{r, echo = F}
+chunk_code_hover(chunk_name = "my_cars")
+```
+
+```{css, echo = F}
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  background-color:white;
+}
+```
+

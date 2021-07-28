@@ -25,7 +25,7 @@ load("current_image.Rdata")
 ```
 
 
-```{r, echo = F, eval = TRUE , message = F, warning = F}
+```{r, echo = F, eval = FALSE , message = F, warning = F}
 xaringanExtra::use_share_again()
 ```
 
@@ -52,7 +52,7 @@ g <- mtcars %>% ggplot() +
 
 ```
 
-`r chunk_reveal(chunk_name = "the_chunk", break_type = "auto", ...)`
+`r chunk_reveal(chunk_name = "the_chunk", break_type = "auto", left_assign = T)`
 
 
 

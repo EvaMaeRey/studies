@@ -25,7 +25,7 @@ load("current_image.Rdata")
 ```
 
 
-```{r, echo = F, eval = TRUE , message = F, warning = F}
+```{r, echo = F, eval = FALSE , message = F, warning = F}
 xaringanExtra::use_share_again()
 ```
 

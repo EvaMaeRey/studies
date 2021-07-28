@@ -1,8 +1,0 @@
-"0","flipbookr::embed_flipbook(chunk_name = ""data_manipulation"","
-"0","                          use_share_again = T,"
-"0","                          use_embed_xaringan = T)"
-"2","no non-missing arguments to max; returning -Inf"
-"2","Quitting from lines 37-40 (data_manipulation_embed.Rmd) 
-"
-"2","Error in 1:num_lines : result would be too long a vector
-"
